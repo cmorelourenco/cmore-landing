@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get early access · C-MORE</title>
+<meta name="robots" content="noindex">
+<style>
+/* Figtree, the brand face — same self-hosted files as the landing. */
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 300; font-display: swap; src: url("fonts/figtree-300.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/figtree-400.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/figtree-500.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/figtree-600.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 700; font-display: swap; src: url("fonts/figtree-700.woff2") format('woff2'); }
+
+/* The design system's tokens, the subset this page uses. */
+:root {
+  --color-graphite: #343434;
+  --color-coral: #f46d4f;
+  --color-coral-deep: #f44e29;
+  --color-coral-tint: #f9e7e3;
+  --color-blue: #4e638b;
+  --color-mid-blue: #909db6;
+  --color-off-white: #fafafa;
+  --color-light-beige: #f2f1ed;
+  --color-mid-beige: #e9e7e2;
+  --color-dark-beige: #e0ded7;
+  --color-sand-400: #c3c0b8;
+  --color-sand-500: #96958e;
+  --color-sand-600: #6e6e6a;
+  --color-positive: #3f7d2e;
+  --color-critical: #b3261e;
+
+  --color-ground: var(--color-light-beige);
+  --color-surface: #ffffff;
+  --color-surface-sunken: var(--color-mid-beige);
+  --color-ink: var(--color-graphite);
+  --color-ink-muted: var(--color-blue);
+  --color-ink-subtle: var(--color-sand-600);
+  --color-line: var(--color-dark-beige);
+  --color-activation: var(--color-coral);
+  --color-activation-hover: var(--color-coral-deep);
+  --color-activation-foreground: var(--color-graphite);
+
+  --font-sans: 'Figtree', Arial, ui-sans-serif, system-ui, sans-serif;
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-md: 0.75rem;
+  --radius-pill: 9999px;
+  --shadow-activate: 0 8px 28px -10px rgba(244, 109, 79, 0.55);
+  --shadow-raised: 0 1px 2px rgba(52, 52, 52, 0.05), 0 4px 12px -6px rgba(52, 52, 52, 0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; background: var(--color-ground); color: var(--color-ink);
+  font-family: var(--font-sans); font-size: 1rem; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; font-synthesis-weight: none;
+}
+h1, h2, p { margin: 0; }
+h1, h2 { text-wrap: balance; }
+a { color: var(--color-ink); text-decoration-color: var(--color-activation); text-underline-offset: 0.18em; }
+:focus-visible { outline: 2px solid var(--color-graphite); outline-offset: 2px; border-radius: 0.5rem; }
+::selection { background: var(--color-coral); color: var(--color-graphite); }
+
+/* ---- Page frame --------------------------------------------------------- */
+.reg { min-height: 100vh; display: flex; flex-direction: column; }
+.reg-top { height: 4.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-inline: 1.25rem; border-bottom: 1px solid var(--color-line); }
+@media (min-width: 40rem) { .reg-top { padding-inline: 2rem; } }
+@media (min-width: 64rem) { .reg-top { padding-inline: 2.5rem; } }
+.brand { display: inline-flex; align-items: baseline; gap: 1px; font-weight: 600; letter-spacing: -0.02em; font-size: 1.25rem; text-decoration: none; color: inherit; }
+.brand i { font-style: normal; color: var(--color-activation); }
+.top-link { font-size: 0.875rem; color: var(--color-ink-subtle); text-decoration: none; }
+.top-link:hover { color: var(--color-ink); }
+.top-link b { font-weight: 500; color: var(--color-ink); }
+
+.reg-main { flex: 1; display: grid; place-items: center; padding: 3rem 1.25rem 4rem; }
+/* the landing's "Know more" cue, turned round: same eyebrow, same coral rule, pointing home */
+.home-cue { display: flex; justify-content: center; padding-top: 1.75rem; }
+.home-cue a { position: relative; display: inline-block; padding-bottom: 0.5rem; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; text-decoration: none; color: var(--color-ink-subtle); transition: color .14s var(--ease-brand); }
+.home-cue a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--color-coral);
+  transform: scaleX(.55); transition: transform .3s var(--ease-brand); }
+.home-cue a:hover { color: var(--color-ink); }
+.home-cue a:hover::after { transform: scaleX(1); }
+.back-row { display: flex; justify-content: center; }
+.stage { width: 100%; max-width: 30rem; }
+
+/* one step visible at a time; the next rises in the way the page itself arrived */
+.step { display: none; }
+.step.is-on { display: block; animation: step-in .55s var(--ease-brand) both; }
+@keyframes step-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+.eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-muted); }
+.eyebrow::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 1px; background: var(--color-coral); }
+.title { margin-top: 1rem; font-size: clamp(2.25rem, 6vw, 3.25rem); line-height: 1.02; letter-spacing: -0.028em; font-weight: 600; }
+.title .soft { font-weight: 300; }
+.title .one-line { display: block; white-space: nowrap; font-size: 0.74em; margin-top: 0.12em; }
+.lead { margin-top: 1rem; font-size: 1.125rem; line-height: 1.55; font-weight: 300; color: var(--color-ink-muted); }
+
+/* ---- Controls: the design system's input and primary button ----------- */
+.field { display: flex; flex-direction: column; gap: 0.375rem; }
+.field label { font-size: 0.875rem; font-weight: 500; }
+.input {
+  width: 100%; height: 3rem; padding: 0 1rem; font: inherit; font-size: 1rem; color: var(--color-ink);
+  background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  transition: border-color .14s var(--ease-brand), box-shadow .14s var(--ease-brand);
+}
+.input::placeholder { color: var(--color-sand-500); }
+.input:hover { border-color: var(--color-sand-400); }
+.input:focus { outline: none; border-color: var(--color-graphite); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-graphite) 14%, transparent); }
+.input.is-bad { border-color: var(--color-critical); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-critical) 14%, transparent); }
+select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2396958e' stroke-width='1.5'><path d='M6 8l4 4 4-4'/></svg>");
+  background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; }
+.hint { font-size: 0.8125rem; color: var(--color-ink-subtle); }
+.err { font-size: 0.8125rem; color: var(--color-critical); min-height: 1.25rem; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 3rem; padding-inline: 1.5rem;
+  border: 1px solid transparent; border-radius: var(--radius-pill); font: inherit; font-weight: 500; font-size: 1rem;
+  letter-spacing: -0.006em; cursor: pointer; white-space: nowrap; text-decoration: none;
+  transition: transform .14s var(--ease-brand), box-shadow .22s var(--ease-brand), background-color .14s var(--ease-brand); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--color-activation); color: var(--color-activation-foreground); }
+.btn-primary:hover:not(:disabled) { background: var(--color-activation-hover); box-shadow: var(--shadow-activate); color: var(--color-activation-foreground); }
+.btn-block { width: 100%; }
+.link-btn { border: 0; background: none; padding: 0; font: inherit; font-size: 0.875rem; color: var(--color-ink-subtle); cursor: pointer; text-decoration: underline; text-decoration-color: var(--color-line); text-underline-offset: 0.2em; }
+.link-btn:hover { color: var(--color-ink); text-decoration-color: var(--color-activation); }
+
+.form { margin-top: 2rem; display: grid; gap: 0.875rem; }
+.promise { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; font-size: 0.875rem; color: var(--color-ink-subtle); }
+.promise span { display: inline-flex; align-items: center; gap: 0.5rem; }
+.promise span::before { content: ""; width: 5px; height: 5px; border-radius: 1px; background: var(--color-graphite); opacity: .5; }
+
+/* ---- Reading: Turn, the brand progress (squares that quarter-turn as they fill) */
+.reading { margin-top: 2.25rem; }
+.turn { display: flex; gap: 0.5rem; }
+.turn i { width: 1.1rem; height: 1.1rem; border-radius: 2px; background: color-mix(in oklab, var(--color-graphite) 12%, transparent);
+  transition: background-color .3s var(--ease-brand), transform .3s var(--ease-brand); }
+.turn i.on { background: var(--color-graphite); transform: rotate(90deg); }
+.turn i.lead-sq { background: var(--color-activation); transform: rotate(45deg); }
+.found { list-style: none; margin: 1.75rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.found li { display: flex; align-items: baseline; gap: 0.75rem; font-size: 1rem; opacity: 0; transform: translateY(6px);
+  transition: opacity .35s var(--ease-brand), transform .35s var(--ease-brand); }
+.found li.in { opacity: 1; transform: none; }
+.found li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 1px; background: var(--color-coral); transform: translateY(-2px); }
+.found b { font-weight: 600; }
+.found .muted { color: var(--color-ink-subtle); }
+
+/* ---- Confirm: the pre-filled card ------------------------------------- */
+.card { margin-top: 2rem; background: var(--color-surface); border: 2px solid var(--color-graphite); border-radius: 0.25rem; padding: 1.5rem; }
+.card-head { display: flex; align-items: center; gap: 1rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--color-line); }
+.mono { flex: none; width: 3.25rem; height: 3.25rem; display: grid; place-items: center; border-radius: 3px;
+  background: var(--color-graphite); color: var(--color-off-white); font-weight: 700; font-size: 1.125rem; letter-spacing: -0.02em; position: relative; }
+.mono::after { content: ""; position: absolute; right: -4px; top: -4px; width: 8px; height: 8px; border-radius: 1px; background: var(--color-coral); }
+.card-head .who { min-width: 0; }
+.avatar { flex: none; position: relative; width: 4rem; height: 4rem; }
+.avatar .pic { width: 100%; height: 100%; border-radius: 3px; overflow: hidden; background: var(--color-surface-sunken); }
+.avatar .pic svg, .avatar .pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.avatar .mono { position: absolute; right: -0.5rem; bottom: -0.5rem; width: 1.75rem; height: 1.75rem; font-size: 0.6875rem; border: 2px solid var(--color-surface); }
+.avatar .mono::after { display: none; }
+.avatar.is-found::after { content: ""; position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 1px; background: var(--color-coral); }
+.card-head .person { font-weight: 600; font-size: 1.125rem; line-height: 1.25; }
+.done-pic { width: 3.5rem; height: 3.5rem; margin-bottom: 1.5rem; }
+.done-mark[hidden] { display: none; }
+.card-head .co { font-weight: 600; font-size: 1.125rem; line-height: 1.25; }
+.card-head .dom { font-size: 0.875rem; color: var(--color-ink-subtle); overflow-wrap: anywhere; }
+.grid2 { margin-top: 1.25rem; display: grid; gap: 0.875rem; grid-template-columns: 1fr 1fr; }
+.grid2 .full { grid-column: 1 / -1; }
+@media (max-width: 30rem) { .grid2 { grid-template-columns: 1fr; } }
+.card .input { height: 2.75rem; }
+.filled { position: relative; }
+.filled .input { padding-right: 2.25rem; }
+.filled::after { content: ""; position: absolute; right: 0.875rem; bottom: 1.125rem; width: 6px; height: 6px; border-radius: 1px; background: var(--color-coral); pointer-events: none; }
+.filled:has(select)::after { right: 2.5rem; } /* clear of the select's chevron */
+.filled:has(select) select.input { padding-right: 3.25rem; }
+.seg { display: flex; padding: 0.1875rem; gap: 0.1875rem; background: var(--color-surface-sunken); border-radius: var(--radius-pill); }
+.seg button { flex: 1; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 0.875rem; font-weight: 500;
+  color: var(--color-ink-muted); padding: 0.5rem 0.75rem; border-radius: var(--radius-pill);
+  transition: background-color .14s var(--ease-brand), color .14s var(--ease-brand); }
+.seg button[aria-checked="true"] { background: var(--color-surface); color: var(--color-ink); box-shadow: var(--shadow-raised); }
+.card-note { margin-top: 1rem; font-size: 0.8125rem; color: var(--color-ink-subtle); display: flex; gap: 0.5rem; align-items: baseline; }
+.card-note::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 1px; background: var(--color-coral); transform: translateY(-1px); }
+.actions { margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.875rem; }
+
+/* ---- Code -------------------------------------------------------------- */
+.code { margin-top: 2rem; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5rem; }
+.code input { width: 100%; aspect-ratio: 0.86; min-width: 0; text-align: center; font: inherit; font-size: 1.5rem; font-weight: 600;
+  color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 0.5rem;
+  transition: border-color .14s var(--ease-brand), box-shadow .14s var(--ease-brand), transform .3s var(--ease-brand); }
+.code input:focus { outline: none; border-color: var(--color-graphite); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-graphite) 14%, transparent); }
+.code input.ok { border-color: var(--color-graphite); background: var(--color-graphite); color: var(--color-off-white); }
+.code.checking input { animation: code-pulse .9s var(--ease-brand) infinite alternate; }
+.code.checking input:nth-child(2) { animation-delay: .08s; } .code.checking input:nth-child(3) { animation-delay: .16s; }
+.code.checking input:nth-child(4) { animation-delay: .24s; } .code.checking input:nth-child(5) { animation-delay: .32s; }
+.code.checking input:nth-child(6) { animation-delay: .4s; }
+@keyframes code-pulse { to { background: var(--color-coral); border-color: var(--color-coral); color: var(--color-graphite); } }
+.code-meta { margin-top: 1rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--color-ink-subtle); }
+
+/* ---- Done -------------------------------------------------------------- */
+.done-mark { display: flex; gap: 6px; }
+.done-mark i { width: 14px; height: 14px; border-radius: 2px; background: var(--color-graphite); animation: done-pop .5s var(--ease-brand) both; }
+.done-mark i:nth-child(2) { animation-delay: .08s; } .done-mark i:nth-child(3) { animation-delay: .16s; background: var(--color-coral); }
+@keyframes done-pop { from { opacity: 0; transform: translateY(8px) rotate(-90deg); } to { opacity: 1; transform: none; } }
+.ready { list-style: none; margin: 1.75rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--color-line); display: grid; gap: 0.625rem; }
+.ready li { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9375rem; }
+.ready li span:first-child { color: var(--color-ink-subtle); }
+.ready li span:last-child { font-weight: 500; text-align: right; }
+
+/* ---- Arriving and leaving --------------------------------------------- */
+/* Direct visits settle in; arrivals from the landing do not, because the landing
+   already slid this exact frame up into place. */
+.reg-main { animation: arrive .6s var(--ease-brand) both; }
+.from-landing .reg-main, .embedded .reg-main { animation: none; }
+@keyframes arrive { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+/* going back runs the landing's move in reverse: this page drops away downwards */
+.leaving .reg { transform: translateY(100vh); transition: transform .7s cubic-bezier(0.7, 0, 0.2, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="reg">
+  <header class="reg-top">
+    <a class="brand" href="index.html" data-back aria-label="C-MORE, back to the landing">C<i aria-hidden="true">&ndash;</i>MORE</a>
+    <a class="top-link" href="#" onclick="return false">Already have an account? <b>Log in</b></a>
+  </header>
+
+  <nav class="home-cue" aria-label="Leave sign-up"><a href="index.html" data-back>Back to home</a></nav>
+
+  <main class="reg-main">
+    <div class="stage">
+
+      <!-- 1. Email -->
+      <section class="step is-on" data-step="email" aria-labelledby="t-email">
+        <p class="eyebrow">Get early access</p>
+        <h1 class="title" id="t-email">Just your work email.<br><span class="soft">We do the rest.</span></h1>
+        <p class="lead">We read what is public about your company and fill in your profile for you. You only check it.</p>
+        <form class="form" id="f-email" novalidate>
+          <div class="field">
+            <label for="email">Work email</label>
+            <input class="input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@yourcompany.com" required>
+            <p class="err" id="email-err" role="alert"></p>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Continue</button>
+          <div class="back-row"><a class="link-btn" href="index.html" data-back>Back</a></div>
+          <p class="hint">Prototype: try <button type="button" class="link-btn" data-try>miguel@ferreiraconstrucoes.pt</button></p>
+        </form>
+        <div class="promise"><span>No card</span><span>No password</span><span>About a minute</span></div>
+      </section>
+
+      <!-- 2. Reading -->
+      <section class="step" data-step="reading" aria-labelledby="t-reading" aria-live="polite">
+        <p class="eyebrow">One moment</p>
+        <h1 class="title" id="t-reading">Reading <span class="soft" id="reading-domain">your company</span></h1>
+        <div class="reading">
+          <div class="turn" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <ul class="found" id="found"></ul>
+        </div>
+      </section>
+
+      <!-- 3. Confirm -->
+      <section class="step" data-step="confirm" aria-labelledby="t-confirm">
+        <p class="eyebrow">Is this you?</p>
+        <h1 class="title" id="t-confirm">We found this.<span class="soft one-line">Fix anything that is off.</span></h1>
+        <form id="f-confirm" novalidate>
+          <div class="card">
+            <div class="card-head">
+              <div class="avatar is-found" aria-hidden="true"><div class="pic" id="c-pic"></div><div class="mono" id="c-mono">FC</div></div>
+              <div class="who"><p class="person" id="c-person">Your name</p><p class="dom"><span id="c-co-head">Company</span></p><p class="dom" id="c-dom">domain</p></div>
+            </div>
+            <div class="grid2">
+              <div class="field filled"><label for="c-name">Your name</label><input class="input" id="c-name" autocomplete="name"></div>
+              <div class="field filled"><label for="c-role">Role</label><input class="input" id="c-role" autocomplete="organization-title"></div>
+              <div class="field filled full"><label for="c-co">Company</label><input class="input" id="c-co" autocomplete="organization"></div>
+              <div class="field filled"><label for="c-country">Country</label>
+                <select class="input" id="c-country">
+                  <option>Portugal</option><option>Spain</option><option>France</option><option>Germany</option>
+                  <option>United Kingdom</option><option>Brazil</option><option>Other</option>
+                </select></div>
+              <div class="field filled"><label for="c-size">Company size</label>
+                <select class="input" id="c-size">
+                  <option>1–10</option><option>11–50</option><option>51–200</option><option>201–500</option><option>501–1,000</option><option>1,000+</option>
+                </select></div>
+              <div class="field filled full"><label for="c-sector">Sector</label><input class="input" id="c-sector"></div>
+              <div class="field full"><span id="as-label" style="font-size:.875rem;font-weight:500">Joining as</span>
+                <div class="seg" role="radiogroup" aria-labelledby="as-label">
+                  <button type="button" role="radio" aria-checked="true" data-as="Supplier">Supplier</button>
+                  <button type="button" role="radio" aria-checked="false" data-as="Client">Client</button>
+                  <button type="button" role="radio" aria-checked="false" data-as="Both">Both</button>
+                </div></div>
+            </div>
+            <p class="card-note">Marked fields were filled in from public sources. Change anything you like.</p>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary btn-block" type="submit">Looks right, continue</button>
+            <button type="button" class="link-btn" data-restart>Not you? Use another email</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 4. Code -->
+      <section class="step" data-step="code" aria-labelledby="t-code">
+        <p class="eyebrow">Check your inbox</p>
+        <h1 class="title" id="t-code">Enter the code <span class="soft">we sent you.</span></h1>
+        <p class="lead">Six digits, sent to <b id="code-email" style="font-weight:500;color:var(--color-ink)">you</b>.</p>
+        <div class="code" id="code" role="group" aria-label="Six-digit code">
+          <input inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="Digit 1">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 2">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 3">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 4">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 5">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+        </div>
+        <div class="code-meta"><span>Prototype: any six digits work.</span><button type="button" class="link-btn" data-resend>Resend code</button></div>
+        <div class="back-row" style="margin-top:1.75rem"><button type="button" class="link-btn" data-to="confirm">Back</button></div>
+      </section>
+
+      <!-- 5. Done -->
+      <section class="step" data-step="done" aria-labelledby="t-done">
+        <div class="avatar done-pic" aria-hidden="true"><div class="pic" id="d-pic"></div><div class="mono" id="d-mono">FC</div></div>
+        <div class="done-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h1 class="title" id="t-done">Welcome to the ecosystem<span id="done-name-wrap">, <span class="soft" id="done-name">Miguel</span></span>.</h1>
+        <p class="lead"><span id="done-co">Your company</span> is set up, and your profile already has what we found.</p>
+        <ul class="ready" id="ready"></ul>
+        <div class="actions" style="align-items:stretch">
+          <a class="btn btn-primary" href="#" onclick="return false">Go to my company</a>
+          <a class="link-btn" style="text-align:center" href="index.html" data-back>Back to the landing</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(() => {
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('embed')) document.documentElement.classList.add('embedded');
+  if (qs.has('from')) document.documentElement.classList.add('from-landing');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
+  const $ = (s) => document.querySelector(s);
+
+  // ---- steps ---------------------------------------------------------------
+  const show = (name) => {
+    document.querySelectorAll('.step').forEach((s) => s.classList.toggle('is-on', s.dataset.step === name));
+    const first = document.querySelector(`.step[data-step="${name}"] input, .step[data-step="${name}"] .btn`);
+    if (first && !qs.has('embed')) setTimeout(() => first.focus({ preventScroll: true }), 60);
+    scrollTo(0, 0);
+  };
+
+  // ---- the prototype's "enrichment": no network, just the domain ------------
+  const PERSONAL = ['gmail.com', 'googlemail.com', 'hotmail.com', 'outlook.com', 'live.com', 'msn.com', 'yahoo.com', 'ymail.com',
+    'icloud.com', 'me.com', 'mac.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'gmx.net', 'mail.com', 'sapo.pt', 'zoho.com'];
+  const KNOWN = {
+    'ferreiraconstrucoes.pt': { name: 'Miguel Ferreira', role: 'CEO', company: 'Ferreira Construções, S.A.', country: 'Portugal',
+      sector: 'Construction and civil engineering', size: '201–500', city: 'Porto', founded: 1987, portrait: true },
+  };
+  const COUNTRY_BY_TLD = { pt: 'Portugal', es: 'Spain', fr: 'France', de: 'Germany', uk: 'United Kingdom', br: 'Brazil' };
+  const title = (s) => s.replace(/\b\w/g, (c) => c.toUpperCase());
+  function enrich(email) {
+    const [local, domain] = email.toLowerCase().split('@');
+    if (KNOWN[domain]) return { domain, ...KNOWN[domain] };
+    const parts = domain.split('.'), tld = parts[parts.length - 1];
+    const root = parts.length > 2 && ['co', 'com'].includes(parts[parts.length - 2]) ? parts[parts.length - 3] : parts[parts.length - 2];
+    const words = local.split(/[._-]+/).filter((w) => w && !/^\d+$/.test(w));
+    const generic = ['info', 'geral', 'hello', 'contact', 'admin', 'office', 'mail'];
+    return {
+      domain,
+      name: words.length && !generic.includes(words[0]) ? title(words.join(' ')) : '',
+      role: 'CEO',
+      company: title(root.replace(/[-_]+/g, ' ')),
+      country: COUNTRY_BY_TLD[tld] || 'Portugal',
+      sector: 'Construction',
+      size: '51–200',
+      city: '', founded: null,
+    };
+  }
+  // Dummy profile pictures: an AI-generated stock portrait for the example CEO (not a real person),
+  // a neutral silhouette for any other address.
+  const PHOTO = '<img src="images/profile-miguel.webp" alt="" width="256" height="256" decoding="async">';
+  const SILHOUETTE = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+    + '<rect width="64" height="64" fill="#e9e7e2"/><circle cx="32" cy="26" r="11" fill="#c3c0b8"/>'
+    + '<path d="M11 64c1-12 9-18 21-18s20 6 21 18z" fill="#c3c0b8"/></svg>';
+  const picFor = (d) => (d && d.portrait ? PHOTO : SILHOUETTE);
+  const initials = (s) => (s.replace(/,.*$/, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('') || 'C').toUpperCase();
+
+  let data = null, joiningAs = 'Supplier', email = '';
+
+  // ---- 1. email --------------------------------------------------------------
+  const emailIn = $('#email'), emailErr = $('#email-err');
+  const bad = (msg) => { emailErr.textContent = msg; emailIn.classList.add('is-bad'); emailIn.focus(); };
+  emailIn.addEventListener('input', () => { emailErr.textContent = ''; emailIn.classList.remove('is-bad'); });
+  $('[data-try]').addEventListener('click', () => { emailIn.value = 'miguel@ferreiraconstrucoes.pt'; emailIn.focus(); emailErr.textContent = ''; emailIn.classList.remove('is-bad'); });
+  $('#f-email').addEventListener('submit', (e) => {
+    e.preventDefault();
+    email = emailIn.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) return bad('That does not look like an email address.');
+    if (PERSONAL.includes(email.split('@')[1].toLowerCase())) return bad('Please use your work email, so we can find your company.');
+    read();
+  });
+
+  // ---- 2. reading ------------------------------------------------------------
+  async function read() {
+    data = enrich(email);
+    $('#reading-domain').textContent = data.domain;
+    const found = $('#found'); found.innerHTML = '';
+    const squares = [...document.querySelectorAll('.turn i')];
+    squares.forEach((s) => (s.className = ''));
+    show('reading');
+    const lines = [
+      `<b>${esc(data.company)}</b>`,
+      `${esc(data.sector)}${data.city ? ` <span class="muted">· ${esc(data.city)}, ${esc(data.country)}</span>` : ` <span class="muted">· ${esc(data.country)}</span>`}`,
+      `${esc(data.size)} people${data.founded ? ` <span class="muted">· since ${data.founded}</span>` : ''}`,
+      data.name ? `<b>${esc(data.name)}</b> <span class="muted">· ${esc(data.role)}</span>` : `<span class="muted">Your role</span>`,
+    ];
+    let lit = 0;
+    const fill = (to) => { for (; lit < to; lit++) { squares[lit].className = 'on'; } if (squares[lit]) squares[lit].className = 'lead-sq'; };
+    for (let i = 0; i < lines.length; i++) {
+      await wait(i ? 520 : 380);
+      fill(Math.round(((i + 1) / lines.length) * 9));
+      const li = document.createElement('li'); li.innerHTML = lines[i]; found.appendChild(li);
+      requestAnimationFrame(() => li.classList.add('in'));
+    }
+    await wait(420); squares.forEach((s) => (s.className = 'on'));
+    await wait(520);
+    confirm();
+  }
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---- 3. confirm ------------------------------------------------------------
+  function confirm() {
+    $('#c-mono').textContent = initials(data.company);
+    $('#c-pic').innerHTML = picFor(data);
+    $('#c-person').textContent = data.name || 'Your name';
+    $('#c-co-head').textContent = [data.role, data.company].filter(Boolean).join(' · ');
+    $('#c-dom').textContent = data.domain + (data.city ? ' · ' + data.city : '');
+    $('#c-name').value = data.name; $('#c-role').value = data.role; $('#c-co').value = data.company;
+    $('#c-country').value = data.country; $('#c-size').value = data.size; $('#c-sector').value = data.sector;
+    show('confirm');
+    if (!data.name) setTimeout(() => $('#c-name').focus(), 80);
+  }
+  const syncHead = () => {
+    $('#c-person').textContent = $('#c-name').value.trim() || 'Your name';
+    $('#c-co-head').textContent = [$('#c-role').value.trim(), $('#c-co').value.trim()].filter(Boolean).join(' · ') || 'Company';
+    $('#c-mono').textContent = initials($('#c-co').value);
+  };
+  ['#c-name', '#c-role', '#c-co'].forEach((id) => $(id).addEventListener('input', syncHead));
+  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
+    joiningAs = b.dataset.as;
+    document.querySelectorAll('.seg button').forEach((x) => x.setAttribute('aria-checked', x === b ? 'true' : 'false'));
+  }));
+  $('[data-restart]').addEventListener('click', () => { emailIn.value = ''; show('email'); });
+  $('#f-confirm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameIn = $('#c-name');
+    if (!nameIn.value.trim()) { nameIn.classList.add('is-bad'); nameIn.focus(); return; }
+    nameIn.classList.remove('is-bad');
+    $('#code-email').textContent = email;
+    codes.forEach((c) => { c.value = ''; c.className = ''; });
+    codeBox.classList.remove('checking');
+    show('code');
+  });
+
+  // ---- 4. code ---------------------------------------------------------------
+  const codeBox = $('#code'), codes = [...codeBox.querySelectorAll('input')];
+  const put = (from, digits) => {
+    let i = from;
+    for (const d of digits) { if (i >= codes.length) break; codes[i].value = d; codes[i].classList.add('ok'); i++; }
+    (codes[i] || codes[codes.length - 1]).focus();
+    if (codes.every((c) => /^\d$/.test(c.value))) verify();
+  };
+  codes.forEach((c, i) => {
+    c.addEventListener('input', () => {
+      const d = c.value.replace(/\D/g, '');
+      c.value = ''; c.classList.remove('ok');
+      if (d) put(i, d);
+    });
+    c.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !c.value && i) { codes[i - 1].value = ''; codes[i - 1].classList.remove('ok'); codes[i - 1].focus(); e.preventDefault(); }
+      if (e.key === 'ArrowLeft' && i) codes[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < codes.length - 1) codes[i + 1].focus();
+    });
+    c.addEventListener('paste', (e) => { e.preventDefault(); put(i, (e.clipboardData.getData('text') || '').replace(/\D/g, '')); });
+  });
+  document.querySelectorAll('[data-to]').forEach((b) => b.addEventListener('click', () => show(b.dataset.to)));
+  $('[data-resend]').addEventListener('click', (e) => { e.target.textContent = 'Sent again'; setTimeout(() => (e.target.textContent = 'Resend code'), 2200); });
+  let verifying = false;
+  async function verify() {
+    if (verifying) return; verifying = true;
+    codes.forEach((c) => c.blur());
+    codeBox.classList.add('checking');
+    await wait(1100);
+    verifying = false;
+    done();
+  }
+
+  // ---- 5. done ---------------------------------------------------------------
+  function done() {
+    const name = $('#c-name').value.trim(), co = $('#c-co').value.trim();
+    const first = name.split(/\s+/)[0];
+    $('#done-name').textContent = first; $('#done-name-wrap').hidden = !first;
+    $('#done-co').textContent = co || 'Your company';
+    $('#d-pic').innerHTML = picFor(data);
+    $('#d-mono').textContent = initials(co);
+    document.querySelector('[data-step="done"] .done-mark').hidden = true;
+    const rows = [['Company', co], ['Sector', $('#c-sector').value], ['Country', $('#c-country').value],
+      ['Size', $('#c-size').value + ' people'], ['Joining as', joiningAs], ['You', name + (($('#c-role').value || '').trim() ? ', ' + $('#c-role').value.trim() : '')]];
+    $('#ready').innerHTML = rows.map(([k, v]) => `<li><span>${esc(k)}</span><span>${esc(v)}</span></li>`).join('');
+    show('done');
+  }
+
+  // ---- back to the landing: the arrival, reversed ---------------------------
+  document.querySelectorAll('[data-back]').forEach((a) => a.addEventListener('click', (e) => {
+    if (reduced || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    document.documentElement.classList.add('leaving');
+    setTimeout(() => { location.href = a.getAttribute('href'); }, 620);
+  }));
+  addEventListener('pageshow', (e) => { if (e.persisted) document.documentElement.classList.remove('leaving'); });
+
+  if (!qs.has('embed')) setTimeout(() => emailIn.focus({ preventScroll: true }), qs.has('from') ? 0 : 350);
+})();
+</script>
+</body>
+</html>
