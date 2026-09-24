@@ -12,7 +12,7 @@
      never seen for a frame on the way here. Inline and synchronous on
      purpose — a deferred script would run after the first paint, which is
      exactly the flash we are avoiding. */
-  if (!/[?&]page\b/.test(location.search)) document.documentElement.className += ' intake-first';
+  if (!/[?&](page|filled)\b/.test(location.search)) document.documentElement.className += ' intake-first';
 </script>
 <style>
 /* Figtree, the brand face — same self-hosted files as the landing. */
@@ -341,6 +341,96 @@ html.intake-open, html.intake-open body { overflow: hidden; }
   .faq-cue-wrap { transition: none; }
 }
 
+/* ---- Handed over: she reads, everything else goes ----------------------
+   The screen empties to the off-white it arrived on and she grows into the
+   middle of it, then says what she is doing, one thing at a time.
+
+   The pitch folds and fades as one piece — a grid row from 1fr to 0fr, so it
+   collapses to exactly its own height over the same three quarters of a
+   second that it fades. Nothing is switched to display:none part-way, which
+   is what made the old version snap. */
+.pitch { width: 100%; display: grid; grid-template-rows: 1fr; opacity: 1;
+  transition: grid-template-rows .75s var(--ease-brand), opacity .6s ease; }
+.pitch-in { overflow: hidden; min-height: 0; display: grid; justify-items: center; }
+.is-working .pitch { grid-template-rows: 0fr; opacity: 0; pointer-events: none; }
+/* The list below the fold goes with it; nothing above it moves, so this one
+   can simply fade. */
+.intake-screen.is-working ~ .cues { opacity: 0; pointer-events: none; transition: opacity .7s ease; }
+
+.is-working .drop { cursor: default; }
+.is-working .drop::before, .is-working .drop-hint { opacity: 0; transition: opacity .5s ease; }
+/* The scale goes on the composition, not the button: the button carries the
+   arrival animation, and an animation's fill would win over this. */
+.is-working .drop .alma-media { transform: scale(1.35); }
+.drop .alma-media { transition: transform 1.2s var(--ease-brand), opacity .7s var(--ease-brand); }
+
+/* One line at a time, centred, with the mark's own square beside it. The
+   square takes a quarter-turn with every new line — the brand's Turn, a
+   click into place rather than a spin, and proof she is still going. */
+/* Low on the screen, and off the flow entirely. In the flow it sat right
+   under her box — but her spheres orbit well past that box, so the line was
+   printed over them. Fixed near the foot of the viewport it never meets her,
+   whatever size she is.
+
+   The square is inline rather than a flex item: a long filename wraps to two
+   lines on a phone, and as a flex item the square was left stranded at the
+   edge of the row. Inline, it stays against the first word. */
+.working { position: fixed; left: 0; right: 0; bottom: clamp(2.5rem, 12svh, 7rem); z-index: 55;
+  display: block; text-align: center; max-width: 34rem; margin-inline: auto;
+  padding-inline: 1.25rem; min-height: 2rem; font-size: 1.0625rem; color: var(--color-ink);
+  opacity: 0; transition: opacity .6s var(--ease-brand); }
+.working.is-in { opacity: 1; }
+.working[hidden] { display: none; }
+.doing-sq { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 1px;
+  margin-right: 0.625rem; background: var(--color-coral);
+  transition: transform .45s var(--ease-brand); }
+.working.is-done .doing-sq { background: var(--color-positive); }
+/* Each line goes out before the next comes in, at the same pace, so the
+   change reads as one breath rather than a swap. */
+#doing-text { display: inline; transition: opacity .4s var(--ease-brand); }
+#doing-text b { font-weight: 600; }
+.working.is-done { color: var(--color-ink-subtle); font-size: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pitch, .drop .alma-media, .doing-sq, #doing-text, .working { transition: none; }
+}
+
+/* ---- The company page once there is a company in it -------------------- */
+.ident .mono { flex: none; width: 4rem; height: 4rem; display: grid; place-items: center; border-radius: 3px;
+  background: var(--color-graphite); color: var(--color-off-white); font-weight: 700; font-size: 1.25rem;
+  letter-spacing: -0.02em; position: relative; }
+.ident .mono::after { content: ""; position: absolute; right: -4px; top: -4px; width: 8px; height: 8px;
+  border-radius: 1px; background: var(--color-coral); }
+.ident .name.is-set { color: var(--color-ink); }
+.tile .n.has { color: var(--color-ink); font-weight: 300; }
+
+.doc-list { margin-top: 1.25rem; border-top: 1px solid var(--color-line); }
+.doc { display: grid; grid-template-columns: 1fr auto; gap: 0.25rem 1.5rem; align-items: baseline;
+  padding: 0.9375rem 0; border-bottom: 1px solid var(--color-line); }
+@media (max-width: 40rem) { .doc { grid-template-columns: 1fr; } }
+.doc .n { display: block; font-weight: 500; }
+.doc .c { display: block; margin-top: 0.125rem; font-size: 0.8125rem; color: var(--color-ink-subtle); }
+.status { display: inline-flex; align-items: baseline; gap: 0.5rem; font-size: 0.875rem;
+  color: var(--color-ink-muted); white-space: nowrap; }
+.status::before { content: ""; align-self: center; flex: none; width: 7px; height: 7px; border-radius: 1px;
+  background: var(--color-positive); }
+.status.is-soon { color: var(--color-caution); }
+.status.is-soon::before { background: var(--color-caution); }
+.status.is-out { color: var(--color-critical); }
+.status.is-out::before { background: var(--color-critical); }
+.status.is-none { color: var(--color-ink-subtle); }
+.status.is-none::before { background: var(--color-sand-400); }
+
+/* The hand-off: she and her last line go out to the off-white, and the page
+   comes up through it. The body's own colour travels the same way, so the
+   two halves of the change are one movement. */
+/* Her fade goes on the composition, not the button, for the same reason the
+   scale does: the button's arrival animation holds opacity at 1 and would
+   win over a plain declaration here. */
+.is-finishing .drop .alma-media { opacity: 0; }
+.is-finishing .working { opacity: 0; transition: opacity .7s var(--ease-brand); }
+body { transition: background-color .9s ease; }
+
 /* ---- ALMA's composition, lifted from the landing ------------------------ */
 .alma-comp{position:absolute;inset:0;display:block;overflow:visible}
 .alma-comp img{position:absolute}
@@ -380,6 +470,10 @@ html.intake-open, html.intake-open body { overflow: hidden; }
         <span class="drop-hint" id="drop-hint"><span class="wide">Drop them on me</span><span class="narrow">Tap to add files</span></span>
       </button>
 
+      <!-- Everything she says before the handover, in one collapsible group:
+           faded and folded together it leaves in one movement instead of
+           winking out and dropping the layout underneath it. -->
+      <div class="pitch" id="pitch"><div class="pitch-in">
       <p class="says rise d1">ALMA</p>
       <!-- Her pitch. Once there are files it has been answered, so it folds
            away and the buttons come up to meet her. -->
@@ -402,6 +496,12 @@ html.intake-open, html.intake-open body { overflow: hidden; }
              accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx,.csv,.txt">
 
       <div class="took" id="took" hidden aria-live="polite"></div>
+      </div></div>
+
+      <p class="working" id="working" hidden aria-live="polite">
+        <i class="doing-sq" id="doing-sq" aria-hidden="true"></i>
+        <span id="doing-text"></span>
+      </p>
     </div>
 
     <div class="faq-cue-wrap" id="faq-cue-wrap">
@@ -461,6 +561,7 @@ html.intake-open, html.intake-open body { overflow: hidden; }
 </header>
 
 <main class="page">
+<div id="empty">
 
   <p class="eyebrow">My company</p>
   <h1 class="title">Your company lives here.<br><span class="soft">There is nothing in it yet.</span></h1>
@@ -575,6 +676,115 @@ html.intake-open, html.intake-open body { overflow: hidden; }
   </ul>
 
   <p class="foot">Prototype — nothing here is saved. <a href="index.html">Back to the landing</a>.</p>
+</div>
+
+<!-- The same page with the company in it. Dummy data, but real documents:
+     the cross-sector set US buyers ask every supplier for. -->
+<div id="filled" hidden>
+
+  <p class="eyebrow">My company</p>
+  <h1 class="title">Ferreira Construction LLC</h1>
+  <p class="lead">Everything ALMA read is filed. Two things want your attention, and two clients
+    are waiting on an answer.</p>
+
+  <div class="ident">
+    <div class="mono" aria-hidden="true">FC</div>
+    <div>
+      <p class="name is-set">General contractor · 24 people</p>
+      <p class="sub">EIN 84&#8209;3921745 · Delaware LLC · Wilmington, DE · trading since 2011</p>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Needs your attention</h2>
+    <p class="note">Five minutes of work, and nobody has to chase you.</p>
+  </div>
+  <ul class="watch">
+    <li class="tile is-caution">
+      <p class="k">Expiring soon</p>
+      <p class="n has">2</p>
+      <p class="z">Certificate of Good Standing, 31 Oct. Commercial auto, 3 Nov.</p>
+    </li>
+    <li class="tile is-critical">
+      <p class="k">Expired</p>
+      <p class="n has">1</p>
+      <p class="z">Your business license ran out on 15 August.</p>
+    </li>
+    <li class="tile is-consent">
+      <p class="k">Consents waiting</p>
+      <p class="n has">2</p>
+      <p class="z">Northgate Facilities and Bramwell Group have asked to see your cover.</p>
+    </li>
+  </ul>
+
+  <div class="section-head">
+    <h2>Documents</h2>
+    <p class="note">9 on file · 1 still to add</p>
+  </div>
+  <ul class="doc-list">
+    <li class="doc"><span><span class="n">Form W&#8209;9</span><span class="c">Company &amp; legal · taxpayer ID</span></span><span class="status">On file since 12 Mar 2026</span></li>
+    <li class="doc"><span><span class="n">Certificate of Good Standing</span><span class="c">Company &amp; legal · Delaware</span></span><span class="status is-soon">Expires 31 Oct 2026</span></li>
+    <li class="doc"><span><span class="n">Business license</span><span class="c">Company &amp; legal · city of Wilmington</span></span><span class="status is-out">Expired 15 Aug 2026</span></li>
+    <li class="doc"><span><span class="n">EIN letter</span><span class="c">Company &amp; legal · IRS CP&#8209;575</span></span><span class="status">On file · does not expire</span></li>
+    <li class="doc"><span><span class="n">General liability certificate</span><span class="c">Insurance · ACORD 25</span></span><span class="status">Expires 14 Mar 2027</span></li>
+    <li class="doc"><span><span class="n">Workers' compensation certificate</span><span class="c">Insurance</span></span><span class="status">Expires 1 Jan 2027</span></li>
+    <li class="doc"><span><span class="n">Commercial auto liability</span><span class="c">Insurance</span></span><span class="status is-soon">Expires 3 Nov 2026</span></li>
+    <li class="doc"><span><span class="n">E&#8209;Verify enrolment</span><span class="c">Workforce · I&#8209;9 attestation</span></span><span class="status">On file since 12 Mar 2026</span></li>
+    <li class="doc"><span><span class="n">Code of conduct</span><span class="c">Conduct · anti&#8209;corruption</span></span><span class="status">Signed 12 Mar 2026</span></li>
+    <li class="doc"><span><span class="n">MBE / WBE / DBE certification</span><span class="c">Optional · supplier diversity</span></span><span class="status is-none">Not held</span></li>
+  </ul>
+
+  <div class="section-head">
+    <h2>Your company</h2>
+    <p class="note">Everything in one place, as promised.</p>
+  </div>
+  <ul class="areas">
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
+      </svg>
+      <h3>Company information</h3>
+      <p class="desc">Who you are, on paper.</p>
+      <p class="state"><b>Complete.</b> ALMA filled it in; you checked it.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" onclick="return false">Review information</a></p>
+    </li>
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+      </svg>
+      <h3>Documents</h3>
+      <p class="desc">Certificates, policies, reports — all in one area.</p>
+      <p class="state"><b>9 documents</b>, sorted and dated. One left to add.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" onclick="return false">Add documents</a></p>
+    </li>
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
+      </svg>
+      <h3>Users</h3>
+      <p class="desc">Your colleagues, and what they can do.</p>
+      <p class="state"><b>3 people.</b> You, Ana Rocha, Tomás Dias.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" onclick="return false">Invite users</a></p>
+    </li>
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+      </svg>
+      <h3>Suppliers</h3>
+      <p class="desc">The companies that supply you.</p>
+      <p class="state"><b>4 invited</b>, 3 keeping their papers up to date.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" onclick="return false">Invite suppliers</a></p>
+    </li>
+
+  </ul>
+
+  <p class="foot">Prototype — the company above is made up; the documents are the ones US buyers
+    ask every supplier for. <a href="index.html">Back to the landing</a>.</p>
+</div>
 
 </main>
 
@@ -609,13 +819,28 @@ html.intake-open, html.intake-open body { overflow: hidden; }
     reveal();
   };
 
-  // ?page skips straight to the company page — the page itself is not going
-  // anywhere, this step just sits in front of it.
+  // ?page is the empty company home, ?filled the populated one. Both skip the
+  // intake, which is how either gets looked at without sitting through it.
+  if (new URLSearchParams(location.search).has('filled')) {
+    document.getElementById('empty').hidden = true;
+    document.getElementById('filled').hidden = false;
+  }
   if (root.classList.contains('intake-first')) open(); else reveal();
   document.getElementById('skip').addEventListener('click', close);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !intake.hidden) close(); });
 
-// ---- the cue down to the list -------------------------------------------
+// The end of the reading: she and her last line go out to the off-white the
+  // whole step has been sitting on, and the company page — now with a company
+  // in it — comes up through the same colour. The body's background travels
+  // with them, so it reads as one movement rather than a screen swap.
+  const finish = () => {
+    document.getElementById('empty').hidden = true;
+    document.getElementById('filled').hidden = false;
+    screen.classList.add('is-finishing');
+    setTimeout(() => { intake.hidden = true; root.classList.remove('intake-open'); reveal(); }, 760);
+  };
+
+  // ---- the cue down to the list -------------------------------------------
   const cues = intake.querySelector('.cues');
   const cueWrap = document.getElementById('faq-cue-wrap');
   // It asks "do you know what I want?", so it retires the moment that question
@@ -668,8 +893,66 @@ html.intake-open, html.intake-open body { overflow: hidden; }
     show();
   };
 
+  // ---- handing it over -----------------------------------------------------
+  // Everything but her folds and fades to the off-white, she grows into the
+  // middle of it, and she says what she is doing one line at a time. The
+  // lines name the visitor's own files, so the wait is about their paperwork
+  // rather than a generic spinner.
+  let handed = false;
   document.getElementById('hand').addEventListener('click', () => {
-    // The step after this one is not built yet.
+    if (handed) return;
+    handed = true;
+
+    screen.classList.add('is-working');
+
+    const working = document.getElementById('working');
+    const sq = document.getElementById('doing-sq');
+    const text = document.getElementById('doing-text');
+
+    const n = received.length;
+    const name = (i) => received[i % received.length];
+    const lines = [
+      `Opening ${n} file${n === 1 ? '' : 's'}.`,
+      `Reading <b>${esc(name(0))}</b>.`,
+      'Working out what each one is.',
+      n > 1 ? `Reading <b>${esc(name(1))}</b>.` : 'Reading every page.',
+      'Checking the dates they run out.',
+      'Matching them against what buyers ask for.',
+      'Filing them where they belong.',
+    ];
+    let quarter = 0;
+    const put = (html) => {
+      text.innerHTML = html;
+      // A quarter-turn per line. The square is what says she is still going,
+      // so it moves exactly when what she is doing changes — the mark's own
+      // ninety degrees, a click into place rather than a spin.
+      sq.style.transform = `rotate(${(quarter += 90)}deg)`;
+    };
+
+    if (reducedMotion) { finish(); return; }
+
+    // She takes the middle first, then starts talking.
+    setTimeout(() => {
+      working.hidden = false;
+      requestAnimationFrame(() => working.classList.add('is-in'));
+      put(lines[0]);
+    }, 620);
+
+    // Out over 400ms, swapped while invisible, back in over 400ms, then held
+    // for 900 — the same easing either way, so neither end reads as a cut.
+    let k = 1;
+    const tick = () => {
+      text.style.opacity = '0';
+      setTimeout(() => {
+        put(lines[k]);
+        text.style.opacity = '1';
+        k++;
+        // The last line is not followed by another line: it is followed by
+        // the company page.
+        setTimeout(k < lines.length ? tick : finish, 900);
+      }, 400);
+    };
+    setTimeout(tick, 1900);
   });
 
   document.getElementById('pick').addEventListener('click', () => file.click());
