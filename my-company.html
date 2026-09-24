@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My company · C-MORE</title>
+<meta name="robots" content="noindex">
+<script>
+  /* Before the first paint: unless ?page asks for the company page itself,
+     this visit starts on ALMA. The class hides the page and paints the
+     off-white the previous screen dissolved into, so the company home is
+     never seen for a frame on the way here. Inline and synchronous on
+     purpose — a deferred script would run after the first paint, which is
+     exactly the flash we are avoiding. */
+  if (!/[?&]page\b/.test(location.search)) document.documentElement.className += ' intake-first';
+</script>
+<style>
+/* Figtree, the brand face — same self-hosted files as the landing. */
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 300; font-display: swap; src: url("fonts/figtree-300.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/figtree-400.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/figtree-500.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/figtree-600.woff2") format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 700; font-display: swap; src: url("fonts/figtree-700.woff2") format('woff2'); }
+
+/* The design system's tokens, the subset this page uses. Same block as the
+   sign-up page, so the two stay in step. */
+:root {
+  --color-graphite: #343434;
+  --color-coral: #f46d4f;
+  --color-coral-deep: #f44e29;
+  --color-coral-tint: #f9e7e3;
+  --color-blue: #4e638b;
+  --color-mid-blue: #909db6;
+  --color-off-white: #fafafa;
+  --color-light-beige: #f2f1ed;
+  --color-mid-beige: #e9e7e2;
+  --color-dark-beige: #e0ded7;
+  --color-sand-400: #c3c0b8;
+  --color-sand-500: #96958e;
+  --color-sand-600: #6e6e6a;
+  --color-positive: #3f7d2e;
+  --color-caution: #a8690a;
+  --color-critical: #b3261e;
+
+  --color-ground: var(--color-light-beige);
+  --color-surface: #ffffff;
+  --color-surface-sunken: var(--color-mid-beige);
+  --color-ink: var(--color-graphite);
+  --color-ink-muted: var(--color-blue);
+  --color-ink-subtle: var(--color-sand-600);
+  --color-line: var(--color-dark-beige);
+  --color-activation: var(--color-coral);
+  --color-activation-hover: var(--color-coral-deep);
+  --color-activation-foreground: var(--color-graphite);
+
+  --font-sans: 'Figtree', Arial, ui-sans-serif, system-ui, sans-serif;
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-md: 0.75rem;
+  --radius-pill: 9999px;
+  --shadow-activate: 0 8px 28px -10px rgba(244, 109, 79, 0.55);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+/* The arriving state: off-white, and nothing of the page yet. */
+html.intake-first, html.intake-first body { background: var(--color-off-white); }
+html.intake-first .top, html.intake-first .page { opacity: 0; visibility: hidden; }
+.top, .page { transition: opacity .55s var(--ease-brand); }
+body {
+  margin: 0; min-height: 100vh; background: var(--color-ground); color: var(--color-ink);
+  font-family: var(--font-sans); font-size: 1rem; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; font-synthesis-weight: none;
+}
+h1, h2, h3, p, ul { margin: 0; }
+h1, h2 { text-wrap: balance; }
+ul { list-style: none; padding: 0; }
+a { color: var(--color-ink); text-decoration-color: var(--color-activation); text-underline-offset: 0.18em; }
+:focus-visible { outline: 2px solid var(--color-graphite); outline-offset: 2px; border-radius: 0.5rem; }
+::selection { background: var(--color-coral); color: var(--color-graphite); }
+
+/* ---- Frame -------------------------------------------------------------- */
+.top { position: sticky; top: 0; z-index: 10; height: 4.5rem; display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding-inline: 1.25rem; background: color-mix(in oklab, var(--color-ground) 90%, transparent);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-line); }
+@media (min-width: 40rem) { .top { padding-inline: 2rem; } }
+@media (min-width: 64rem) { .top { padding-inline: 2.5rem; } }
+.brand { display: inline-flex; align-items: baseline; gap: 1px; font-weight: 600; letter-spacing: -0.02em; font-size: 1.25rem; text-decoration: none; color: inherit; }
+.brand i { font-style: normal; color: var(--color-activation); }
+.top-right { display: flex; align-items: center; gap: 0.75rem; }
+.who-chip { display: inline-flex; align-items: center; gap: 0.625rem; font-size: 0.875rem; color: var(--color-ink-subtle); }
+.who-chip .mono { width: 1.75rem; height: 1.75rem; display: grid; place-items: center; border-radius: 3px;
+  background: var(--color-graphite); color: var(--color-off-white); font-size: 0.6875rem; font-weight: 700; letter-spacing: -0.02em; }
+@media (max-width: 30rem) { .who-chip span { display: none; } }
+
+.page { max-width: 72rem; margin-inline: auto; padding: 2.5rem 1.25rem 5rem; }
+@media (min-width: 40rem) { .page { padding-inline: 2rem; } }
+@media (min-width: 64rem) { .page { padding: 3.5rem 2.5rem 6rem; } }
+
+.eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-muted); }
+.eyebrow::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 1px; background: var(--color-coral); }
+.title { margin-top: 1rem; font-size: clamp(2.25rem, 5.5vw, 3.25rem); line-height: 1.04; letter-spacing: -0.028em; font-weight: 600; }
+.title .soft { font-weight: 300; }
+.lead { margin-top: 1.125rem; max-width: 46ch; font-size: 1.125rem; line-height: 1.55; font-weight: 300; color: var(--color-ink-muted); }
+
+/* ---- Buttons, from the sign-up page ------------------------------------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 3rem; padding-inline: 1.5rem;
+  border: 1px solid transparent; border-radius: var(--radius-pill); font: inherit; font-weight: 500; font-size: 1rem;
+  letter-spacing: -0.006em; cursor: pointer; white-space: nowrap; text-decoration: none; color: var(--color-ink);
+  transition: transform .14s var(--ease-brand), box-shadow .22s var(--ease-brand), background-color .14s var(--ease-brand), border-color .14s var(--ease-brand); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn-primary { background: var(--color-activation); color: var(--color-activation-foreground); }
+.btn-primary:hover { background: var(--color-activation-hover); box-shadow: var(--shadow-activate); color: var(--color-activation-foreground); }
+.btn-quiet { border-color: var(--color-line); background: var(--color-surface); }
+.btn-quiet:hover { border-color: var(--color-sand-400); }
+.btn-sm { height: 2.375rem; padding-inline: 1rem; font-size: 0.875rem; }
+.link-btn { border: 0; background: none; padding: 0; font: inherit; font-size: 0.875rem; color: var(--color-ink-subtle);
+  cursor: pointer; text-decoration: underline; text-decoration-color: var(--color-line); text-underline-offset: 0.2em; }
+.link-btn:hover { color: var(--color-ink); text-decoration-color: var(--color-activation); }
+
+/* Nothing on this page can be done until the company exists. The actions are
+   drawn anyway — seeing what is waiting is the point of an empty state — but
+   they are visibly parked rather than quietly broken. */
+.btn[aria-disabled="true"] { opacity: .75; cursor: not-allowed; }
+.btn[aria-disabled="true"]:hover { background: var(--color-surface); box-shadow: none; border-color: var(--color-line); }
+
+/* ---- The identity strip ------------------------------------------------- */
+.ident { margin-top: 2.5rem; display: flex; align-items: center; gap: 1.125rem; padding-bottom: 2rem; border-bottom: 1px solid var(--color-line); }
+.ident .slot { flex: none; width: 4rem; height: 4rem; display: grid; place-items: center; border-radius: 3px;
+  border: 2px dashed var(--color-sand-400); color: var(--color-sand-500); }
+.ident .slot svg { width: 1.5rem; height: 1.5rem; }
+.ident .name { font-weight: 600; font-size: 1.25rem; line-height: 1.25; color: var(--color-ink-subtle); }
+.ident .sub { font-size: 0.875rem; color: var(--color-ink-subtle); }
+
+/* ---- ALMA, and the ask -------------------------------------------------- */
+.ask { margin-top: 2.5rem; display: grid; gap: 2rem; align-items: center;
+  background: var(--color-surface); border: 2px solid var(--color-graphite); border-radius: 0.25rem; padding: 2rem 1.75rem; }
+@media (min-width: 52rem) {
+  .ask { grid-template-columns: minmax(14rem, 20rem) 1fr; gap: 3.5rem; padding: 3rem 3rem 3rem 2.5rem; }
+}
+.alma-media { display: block; position: relative; width: 100%; max-width: 20rem; aspect-ratio: 0.9598; margin-inline: auto; pointer-events: none; }
+.ask .says { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-muted); }
+.ask .says::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 1px; background: var(--color-coral); }
+.ask h2 { margin-top: 0.875rem; font-size: clamp(1.75rem, 3.4vw, 2.25rem); line-height: 1.12; letter-spacing: -0.022em; font-weight: 600; }
+.ask h2 .soft { font-weight: 300; }
+.ask p { margin-top: 1rem; max-width: 44ch; color: var(--color-ink-muted); font-weight: 300; font-size: 1.0625rem; }
+.ask .actions { margin-top: 1.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+
+/* ---- The watch: what the main area will hold --------------------------- */
+.section-head { margin-top: 3.5rem; display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.section-head h2 { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.01em; }
+.section-head .note { font-size: 0.875rem; color: var(--color-ink-subtle); }
+
+/* Explicit columns rather than auto-fit: three tiles and four cards both
+   leave an orphan on a row at the widths auto-fit happens to pick. */
+.watch { margin-top: 1.25rem; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 52rem) { .watch { grid-template-columns: repeat(3, 1fr); } }
+.tile { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); padding: 1.375rem 1.5rem; }
+.tile .k { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--color-ink); }
+.tile .k::before { content: ""; width: 7px; height: 7px; border-radius: 1px; background: var(--color-sand-400); }
+.tile.is-caution .k::before { background: var(--color-caution); }
+.tile.is-critical .k::before { background: var(--color-critical); }
+.tile.is-consent .k::before { background: var(--color-coral); }
+.tile .n { margin-top: 0.875rem; font-size: 2.5rem; line-height: 1; font-weight: 300; letter-spacing: -0.03em; color: var(--color-sand-400); }
+.tile .z { margin-top: 0.625rem; font-size: 0.875rem; color: var(--color-ink-subtle); }
+
+/* ---- The four areas ----------------------------------------------------- */
+.areas { margin-top: 1.25rem; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 34rem) { .areas { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 74rem) { .areas { grid-template-columns: repeat(4, 1fr); } }
+.area { display: flex; flex-direction: column; background: var(--color-surface); border: 1px solid var(--color-line);
+  border-radius: var(--radius-md); padding: 1.5rem; }
+.area .ico { width: 1.5rem; height: 1.5rem; color: var(--color-coral); }
+.area h3 { margin-top: 0.875rem; font-size: 1rem; font-weight: 600; }
+.area .desc { margin-top: 0.25rem; font-size: 0.875rem; color: var(--color-ink-subtle); }
+.area .state { margin-top: 1.125rem; padding-top: 1.125rem; border-top: 1px dashed var(--color-line);
+  font-size: 0.875rem; color: var(--color-ink-subtle); }
+.area .state b { font-weight: 600; color: var(--color-ink); }
+.area .go { margin-top: 1.125rem; }
+
+.foot { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-line); font-size: 0.875rem; color: var(--color-ink-subtle); }
+
+/* ---- First step: ALMA takes the screen ----------------------------------
+   Arriving here, the company page behind washes out to off-white and ALMA
+   comes up in its place. She is the only thing on the screen, the way the
+   last page of sign-up is the only thing on its screen.
+
+   The overlay is `hidden` in the markup and shown by script, so a visitor
+   without JavaScript simply gets the page underneath rather than a blank
+   off-white field. */
+/* Her spheres orbit outside their box on purpose, and on a phone that overhang
+   was enough to make the step scroll sideways. `hidden` rather than `clip`:
+   next to `overflow-y: auto` a `clip` computes to `hidden` anyway, so this
+   says what the browser actually does. */
+.intake { position: fixed; inset: 0; z-index: 50; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  background: var(--color-off-white); }
+.intake[hidden] { display: none; }
+html.intake-open, html.intake-open body { overflow: hidden; }
+
+.intake-inner { min-height: 100%; display: grid; align-content: start; justify-items: center;
+  gap: 0; max-width: 56rem; margin-inline: auto; padding: 0 1.25rem 4rem; text-align: center; }
+/* A whole viewport to herself, so the list underneath starts below the fold
+   however tall the screen is.
+
+   `safe center` matters: on a short screen this block is taller than the
+   viewport, and a plain `center` would push ALMA off the top of the scroll
+   container where you could never scroll back to her. */
+.intake-screen { width: 100%; min-height: 100svh; display: grid; align-content: safe center;
+  justify-items: center; padding: 3rem 0 5.5rem; }
+@media (min-width: 40rem) { .intake-inner { padding-inline: 2rem; } }
+
+/* Each piece arrives after her, in reading order. */
+.intake .rise { animation: rise .7s var(--ease-brand) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.intake .d1 { animation-delay: .95s; }
+.intake .d2 { animation-delay: 1.10s; }
+.intake .d3 { animation-delay: 1.30s; }
+.intake .d4 { animation-delay: 1.50s; }
+
+/* ALMA, and the target. She is what you drop onto. */
+/* Sized off the viewport height as well as its width, so she never crowds
+   out the words she is saying on a short screen. */
+.drop { position: relative; display: block; width: min(22rem, 74vw, 40svh); border: 0; background: none; padding: 0;
+  cursor: pointer; border-radius: 50%; animation: alma-arrive 1.2s var(--ease-brand) .45s both; }
+@keyframes alma-arrive { from { opacity: 0; transform: scale(.84); } to { opacity: 1; transform: none; } }
+.drop .alma-media { max-width: none; }
+/* The ring is the invitation: dashed and quiet until something is over her. */
+.drop::before { content: ""; position: absolute; inset: 6%; border-radius: 50%;
+  border: 2px dashed color-mix(in oklab, var(--color-graphite) 22%, transparent);
+  transition: border-color .2s var(--ease-brand), transform .3s var(--ease-brand), background-color .2s var(--ease-brand); }
+.drop:hover::before, .drop:focus-visible::before { border-color: color-mix(in oklab, var(--color-graphite) 40%, transparent); }
+.drop.is-over::before { border-color: var(--color-coral); border-style: solid;
+  background: color-mix(in oklab, var(--color-coral) 7%, transparent); transform: scale(1.06); }
+.drop.is-over { transform: scale(1.02); }
+.drop-hint { position: absolute; left: 50%; bottom: 8%; translate: -50% 0; white-space: nowrap; font-size: 0.8125rem;
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-subtle); pointer-events: none; }
+/* You cannot drag a file on a phone, so she asks for a tap there instead. */
+.drop-hint .narrow { display: none; }
+@media (pointer: coarse), (max-width: 34rem) {
+  .drop-hint .wide { display: none; }
+  .drop-hint .narrow { display: inline; }
+}
+.drop.is-over .drop-hint { color: var(--color-coral-deep); }
+
+.intake .says { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; font-size: 0.8125rem;
+  font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-muted); }
+.intake .says::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 1px; background: var(--color-coral); }
+.intake h1 { margin-top: 0.875rem; font-size: clamp(1.875rem, 5vw, 2.75rem); line-height: 1.06; letter-spacing: -0.028em; font-weight: 600; }
+/* Full width of the column and tight under the heading: at a 42ch measure it
+   ran to four lines and pushed the button off the first screen. */
+.intake .lead { margin-top: 0.75rem; margin-inline: auto; max-width: none; }
+/* A phone has no width to spend, so the same sentences buy their room back
+   from the type size and from her. */
+@media (max-width: 34rem) {
+  .intake .lead { font-size: 1rem; line-height: 1.5; }
+  .intake-screen { padding: 2rem 0 5rem; }
+  .drop { width: min(22rem, 74vw, 32svh); }
+}
+.intake .actions { margin-top: 1.75rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+/* Folding her pitch away: a grid row from 1fr to 0fr collapses to exactly the
+   height of the content, with nothing to measure or hard-code. */
+.say { width: 100%; display: grid; grid-template-rows: 1fr; opacity: 1;
+  transition: grid-template-rows .55s var(--ease-brand), opacity .35s ease; }
+.say > div { overflow: hidden; min-height: 0; }
+.has-files .say { grid-template-rows: 0fr; opacity: 0; pointer-events: none; }
+/* With the words gone the buttons sit right under her, so they need less air
+   above them than they did under a paragraph. */
+.has-files .actions { margin-top: 1.25rem; }
+
+/* The forward action only exists once there is something to hand over. */
+#hand { display: none; }
+.has-files #hand { display: inline-flex; animation: rise .5s var(--ease-brand) .15s both; }
+/* Stacked, the two read as a pair, so they are cut to one width rather than
+   to their labels. */
+.intake .actions .btn { min-width: 15rem; }
+/* Each button keeps one treatment for the whole step. Adding files is the
+   quiet one throughout — on this screen the thing you are meant to do is drop
+   them on her, and the button is the way round that for anyone who cannot
+   drag. The coral belongs to the action that carries the step forward, and
+   only appears when there is something to carry. */
+
+@media (prefers-reduced-motion: reduce) {
+  .say { transition: none; }
+  .has-files #hand { animation: none; }
+}
+
+/* What matters most. Grouped, because ten loose names is a list to fail at
+   and four groups is something you can recognise your own paperwork in. */
+.cues { margin-top: 1.5rem; width: 100%; text-align: left; border-top: 1px solid var(--color-line); padding-top: 1.75rem; }
+.cues > .k { font-size: 0.875rem; color: var(--color-ink-subtle); text-align: center; }
+.cue-grid { margin-top: 1.5rem; display: grid; gap: 1.25rem 2rem; grid-template-columns: 1fr; }
+@media (min-width: 40rem) { .cue-grid { grid-template-columns: 1fr 1fr; } }
+.cue h2 { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-muted); }
+.cue ul { margin-top: 0.625rem; display: grid; gap: 0.375rem; }
+.cue li { position: relative; padding-left: 1rem; font-size: 0.9375rem; color: var(--color-ink); }
+.cue li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 6px; height: 6px; border-radius: 1px; background: var(--color-coral); }
+.cue li i { font-style: normal; color: var(--color-ink-subtle); }
+.cue.is-optional li::before { background: var(--color-sand-400); }
+
+/* What she took. */
+.took { margin-top: 1.5rem; width: 100%; max-width: 30rem; text-align: left; }
+.took[hidden] { display: none; }
+.took ul { display: grid; gap: 0.375rem; margin-top: 0.75rem; }
+.took li { display: flex; gap: 0.625rem; align-items: baseline; font-size: 0.9375rem; }
+.took li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 1px; background: var(--color-positive); transform: translateY(-1px); }
+.took .more { color: var(--color-ink-subtle); font-size: 0.875rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .intake, .intake .rise, .drop { animation: none; }
+}
+
+/* ---- The cue to what she is asking for ---------------------------------
+   The list of documents is below the fold on purpose — the step is "give me
+   what you have", not "work through a checklist". This floats over the first
+   screen to say the list is there, bobs so it is noticed, and takes itself
+   away once you have reached it.
+
+   Two elements: the wrapper is fixed and handles arriving and leaving, the
+   button inside does the bobbing. One animated property each, so they never
+   fight over `transform`. */
+.faq-cue-wrap { position: fixed; left: 0; right: 0; bottom: 1.5rem; z-index: 60;
+  display: flex; justify-content: center; padding-inline: 1.25rem; pointer-events: none;
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity .5s var(--ease-brand), transform .5s var(--ease-brand), visibility .5s; }
+.faq-cue-wrap.is-in { opacity: 1; visibility: visible; transform: none; }
+/* The landing's scroll cue, word for word in form: 0.7rem uppercase at
+   ink-subtle with a 2px coral rule the width of the label. No pill, no
+   shadow — the landing does not have one and neither should this. */
+.faq-cue { pointer-events: auto; position: relative; display: inline-block; border: 0; background: none;
+  padding: 0 0 0.5rem; font: inherit; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--color-ink-subtle); cursor: pointer; white-space: nowrap;
+  animation: bob 2.6s ease-in-out infinite; transition: color .14s var(--ease-brand); }
+.faq-cue::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--color-coral); }
+.faq-cue:hover { color: var(--color-ink); }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .faq-cue { animation: none; }
+  .faq-cue-wrap { transition: none; }
+}
+
+/* ---- ALMA's composition, lifted from the landing ------------------------ */
+.alma-comp{position:absolute;inset:0;display:block;overflow:visible}
+.alma-comp img{position:absolute}
+.alma-sphere{position:absolute;display:block;transform-origin:var(--ox,50%) var(--oy,50%);will-change:transform,opacity;animation:alma-orbit var(--orbit,50s) linear infinite,alma-sphere-breathe calc(4.8s + var(--i) * .53s) ease-in-out calc(var(--i) * -1.1s) infinite alternate;animation-delay:calc(var(--i) * -6.1s),calc(var(--i) * -1.1s)}
+@keyframes alma-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.alma-radial{position:absolute;inset:0;display:block;will-change:transform;animation:alma-radial-swing var(--radial,24s) ease-in-out calc(var(--i) * -3.7s) infinite}
+@keyframes alma-radial-swing{0%{transform:translate(0,0)}30%{transform:translate(calc(var(--rx) * 1),calc(var(--ry) * 1))}55%{transform:translate(calc(var(--rx) * -0.7),calc(var(--ry) * -0.7))}80%{transform:translate(calc(var(--rx) * 0.45),calc(var(--ry) * 0.45))}100%{transform:translate(0,0)}}
+@keyframes alma-sphere-breathe{from{opacity:1}to{opacity:.72}}
+.alma-sphere img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;user-select:none;pointer-events:none}
+.alma-sphere .a{animation:alma-grain-a calc(5.6s + var(--i) * .61s) ease-in-out calc(var(--i) * -1.9s) infinite alternate,alma-counter-orbit var(--orbit,50s) linear calc(var(--i) * -6.1s) infinite}
+.alma-sphere .b{animation:alma-grain-b calc(5.6s + var(--i) * .61s) ease-in-out calc(var(--i) * -1.9s) infinite alternate,alma-counter-orbit var(--orbit,50s) linear calc(var(--i) * -6.1s) infinite}
+@keyframes alma-grain-a{from{opacity:1}to{opacity:.35}}
+@keyframes alma-grain-b{from{opacity:0}to{opacity:.75}}
+@keyframes alma-counter-orbit{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .alma-sphere,.alma-radial,.alma-sphere img,.alma-comp{animation:none !important}
+  .alma-sphere .b{opacity:0}
+}
+</style>
+</head>
+<body>
+
+<!-- The first step. Hidden until the script shows it: without JavaScript the
+     company page underneath is what you get, which is the right fallback.
+     ALMA's composition is cloned in from the page below rather than repeated
+     here, so there is one copy of those eighteen frames in the source. -->
+<div class="intake" id="intake" hidden role="dialog" aria-modal="true" aria-labelledby="intake-title">
+  <div class="intake-inner">
+
+    <!-- One full screen. The list of documents below it must not peek into
+         view here: the step is "give me what you have", not "work through a
+         checklist", and a visible list turns it into the second thing. -->
+    <div class="intake-screen">
+      <button class="drop" id="drop" type="button"
+              aria-describedby="intake-title drop-note">
+        <span class="alma-media" id="intake-alma" aria-hidden="true"></span>
+        <span class="drop-hint" id="drop-hint"><span class="wide">Drop them on me</span><span class="narrow">Tap to add files</span></span>
+      </button>
+
+      <p class="says rise d1">ALMA</p>
+      <!-- Her pitch. Once there are files it has been answered, so it folds
+           away and the buttons come up to meet her. -->
+      <div class="say">
+        <div>
+          <h1 class="rise d1" id="intake-title">Let's create your Company profile.</h1>
+          <p class="lead rise d2" id="drop-note">Drag your company's documents onto me, in whatever state they are in.
+            PDF's, scans, a photo of a certificate on your wall. I'll read them and work out what belongs where,
+            while you can go grab a coffee.</p>
+
+        </div>
+      </div>
+
+      <div class="actions rise d3">
+        <button class="btn btn-primary" type="button" id="hand">Hand it to ALMA</button>
+        <button class="btn btn-quiet" type="button" id="pick">Add files</button>
+        <button class="link-btn" type="button" id="skip">Skip</button>
+      </div>
+      <input id="file" type="file" multiple hidden
+             accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx,.csv,.txt">
+
+      <div class="took" id="took" hidden aria-live="polite"></div>
+    </div>
+
+    <div class="faq-cue-wrap" id="faq-cue-wrap">
+      <button class="faq-cue" type="button" id="faq-cue">Frequently asked documents</button>
+    </div>
+
+    <section class="cues rise d4" aria-labelledby="cues-k">
+      <p class="k" id="cues-k">Don't go hunting. Whatever you have now is enough.<br>
+        If something is missing I'll let you know.</p>
+      <div class="cue-grid">
+
+        <div class="cue">
+          <h2>Company &amp; legal</h2>
+          <ul>
+            <li>Form W-9 <i>— taxpayer ID</i></li>
+            <li>Certificate of Good Standing</li>
+            <li>Business license or registration</li>
+            <li>EIN letter <i>— CP-575 or 147C</i></li>
+          </ul>
+        </div>
+
+        <div class="cue">
+          <h2>Insurance</h2>
+          <ul>
+            <li>General liability certificate <i>— ACORD 25</i></li>
+            <li>Workers' compensation certificate</li>
+            <li>Commercial auto liability</li>
+          </ul>
+        </div>
+
+        <div class="cue">
+          <h2>Workforce</h2>
+          <ul>
+            <li>E-Verify enrolment or I-9 attestation</li>
+          </ul>
+        </div>
+
+        <div class="cue is-optional">
+          <h2>Worth having</h2>
+          <ul>
+            <li>Code of conduct or anti-corruption acknowledgement</li>
+            <li>MBE / WBE / DBE certification <i>— if you hold one</i></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<header class="top">
+  <a class="brand" href="index.html" aria-label="C-MORE, back to the landing">C<i aria-hidden="true">&ndash;</i>MORE</a>
+  <div class="top-right">
+    <span class="who-chip"><span class="mono" aria-hidden="true">MF</span><span>Miguel Ferreira</span></span>
+  </div>
+</header>
+
+<main class="page">
+
+  <p class="eyebrow">My company</p>
+  <h1 class="title">Your company lives here.<br><span class="soft">There is nothing in it yet.</span></h1>
+  <p class="lead">Who you are on paper, every document someone might ask to see, the people you work with,
+    and who you have let look. All of it in one place, so you never go looking twice.</p>
+
+  <!-- The identity strip: what the top of this page becomes once the company
+       exists. Dashed rather than absent, so the shape of the thing is visible. -->
+  <div class="ident">
+    <div class="slot" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
+      </svg>
+    </div>
+    <div>
+      <p class="name">No company yet</p>
+      <p class="sub">Your name, registry number, address and sector will sit here.</p>
+    </div>
+  </div>
+
+  <!-- The main area's empty state. Not an apology for having no data: the one
+       thing there is to do, asked by the agent who will do most of it. -->
+  <section class="ask" aria-labelledby="ask-title">
+    <div class="alma-media" aria-hidden="true">
+      <span class="alma-comp"><span class="alma-sphere" style="left:0.000%;top:28.230%;width:26.240%;height:25.180%;--i:0;--ox:214.83%;--oy:79.97%;--orbit:21.60s"><span class="alma-radial" style="--rx:-53.00%;--ry:-9.64%;--radial:13.00s"><img class="a" src="images/sphere-01.webp" alt="" draggable="false"><img class="b" src="images/sphere-02.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:19.460%;top:13.680%;width:47.050%;height:45.160%;--i:1;--ox:78.45%;--oy:76.81%;--orbit:50.70s"><span class="alma-radial" style="--rx:-18.02%;--ry:-16.98%;--radial:15.90s"><img class="a" src="images/sphere-03.webp" alt="" draggable="false"><img class="b" src="images/sphere-04.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:49.550%;top:0.000%;width:37.780%;height:36.260%;--i:2;--ox:18.06%;--oy:133.39%;--orbit:36.40s"><span class="alma-radial" style="--rx:12.39%;--ry:-32.35%;--radial:18.80s"><img class="a" src="images/sphere-05.webp" alt="" draggable="false"><img class="b" src="images/sphere-06.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:38.350%;top:1.300%;width:52.940%;height:50.810%;--i:3;--ox:34.04%;--oy:92.63%;--orbit:47.70s"><span class="alma-radial" style="--rx:7.33%;--ry:-19.57%;--radial:21.70s"><img class="a" src="images/sphere-07.webp" alt="" draggable="false"><img class="b" src="images/sphere-08.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:66.410%;top:38.550%;width:28.270%;height:27.140%;--i:4;--ox:-35.51%;--oy:36.17%;--orbit:42.50s"><span class="alma-radial" style="--rx:48.43%;--ry:7.83%;--radial:24.60s"><img class="a" src="images/sphere-09.webp" alt="" draggable="false"><img class="b" src="images/sphere-10.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:22.740%;top:36.380%;width:54.290%;height:52.110%;--i:5;--ox:61.95%;--oy:23.00%;--orbit:53.45s"><span class="alma-radial" style="--rx:-8.10%;--ry:18.30%;--radial:27.50s"><img class="a" src="images/sphere-11.webp" alt="" draggable="false"><img class="b" src="images/sphere-12.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:27.150%;top:51.150%;width:38.910%;height:37.340%;--i:6;--ox:75.10%;--oy:-7.45%;--orbit:46.06s"><span class="alma-radial" style="--rx:-13.29%;--ry:30.43%;--radial:30.40s"><img class="a" src="images/sphere-13.webp" alt="" draggable="false"><img class="b" src="images/sphere-14.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:48.650%;top:69.390%;width:31.890%;height:30.610%;--i:7;--ox:24.21%;--oy:-68.68%;--orbit:32.66s"><span class="alma-radial" style="--rx:9.27%;--ry:42.66%;--radial:33.30s"><img class="a" src="images/sphere-15.webp" alt="" draggable="false"><img class="b" src="images/sphere-16.webp" alt="" draggable="false"></span></span><span class="alma-sphere" style="left:70.820%;top:60.160%;width:29.180%;height:28.010%;--i:8;--ox:-49.51%;--oy:-42.10%;--orbit:27.04s"><span class="alma-radial" style="--rx:35.20%;--ry:32.57%;--radial:36.20s"><img class="a" src="images/sphere-17.webp" alt="" draggable="false"><img class="b" src="images/sphere-18.webp" alt="" draggable="false"></span></span></span>
+    </div>
+
+    <div>
+      <p class="says">ALMA</p>
+      <h2 id="ask-title">Let's create your company.<br><span class="soft">It takes a minute.</span></h2>
+      <p>Give me the name and I will read what is already public — the registry, your site,
+        the certificates you have online — and fill in most of it myself. You look it over and
+        say yes. Nothing is saved, and nothing is shown to anyone, until you do.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#" onclick="return false">Create my company</a>
+        <a class="link-btn" href="index.html">Do it later</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The three things this page is meant to put in front of you. Empty, but
+       drawn, so it is clear what will appear here and where. -->
+  <div class="section-head">
+    <h2>Needs your attention</h2>
+    <p class="note">Nothing yet — this fills in as documents and consents arrive.</p>
+  </div>
+  <ul class="watch">
+    <li class="tile is-caution">
+      <p class="k">Expiring soon</p>
+      <p class="n" aria-hidden="true">—</p>
+      <p class="z">Anything inside sixty days of its date, early enough to renew it.</p>
+    </li>
+    <li class="tile is-critical">
+      <p class="k">Expired</p>
+      <p class="n" aria-hidden="true">—</p>
+      <p class="z">Past its date. Replace it before a client asks to see it.</p>
+    </li>
+    <li class="tile is-consent">
+      <p class="k">Consents waiting</p>
+      <p class="n" aria-hidden="true">—</p>
+      <p class="z">Someone has asked to see your data. You say yes or no here.</p>
+    </li>
+  </ul>
+
+  <!-- Everything else the company home holds. -->
+  <div class="section-head">
+    <h2>Your company</h2>
+    <p class="note">Available once the company exists.</p>
+  </div>
+  <ul class="areas">
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
+      </svg>
+      <h3>Company information</h3>
+      <p class="desc">Who you are, on paper.</p>
+      <p class="state">Nothing on file. ALMA fills this in and you check it.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" role="button" aria-disabled="true" onclick="return false">Review information</a></p>
+    </li>
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+      </svg>
+      <h3>Documents</h3>
+      <p class="desc">Certificates, policies, reports — all in one area.</p>
+      <p class="state"><b>0</b> documents. Upload what you have; sorting is our problem.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" role="button" aria-disabled="true" onclick="return false">Add documents</a></p>
+    </li>
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
+      </svg>
+      <h3>Users</h3>
+      <p class="desc">Your colleagues, and what they can do.</p>
+      <p class="state"><b>Just you.</b> Invite the people who handle this with you.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" role="button" aria-disabled="true" onclick="return false">Invite users</a></p>
+    </li>
+
+    <li class="area">
+      <svg class="ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+      </svg>
+      <h3>Suppliers</h3>
+      <p class="desc">The companies that supply you.</p>
+      <p class="state"><b>None yet.</b> Invite them and their papers keep themselves up to date.</p>
+      <p class="go"><a class="btn btn-quiet btn-sm" href="#" role="button" aria-disabled="true" onclick="return false">Invite suppliers</a></p>
+    </li>
+
+  </ul>
+
+  <p class="foot">Prototype — nothing here is saved. <a href="index.html">Back to the landing</a>.</p>
+
+</main>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  // If anything below fails, the page must come back rather than leaving the
+  // visitor on a blank off-white field that the head script painted.
+  const reveal = () => root.classList.remove('intake-first');
+
+  const intake = document.getElementById('intake');
+  const source = document.querySelector('.ask .alma-media');
+  if (!intake || !source) { reveal(); return; }
+
+  // One copy of the composition in the source; the second is a clone.
+  document.getElementById('intake-alma').replaceChildren(...[...source.children].map(n => n.cloneNode(true)));
+
+  const drop = document.getElementById('drop');
+  const hint = document.getElementById('drop-hint');
+  const file = document.getElementById('file');
+  const took = document.getElementById('took');
+  const esc = (v) => v.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const open = () => { intake.hidden = false; root.classList.add('intake-open'); };
+  // Dropping the overlay also drops the arriving state, so the page fades up
+  // from the off-white rather than snapping into it.
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const close = () => {
+    intake.hidden = true;
+    root.classList.remove('intake-open');
+    document.getElementById('faq-cue-wrap').classList.remove('is-in');
+    reveal();
+  };
+
+  // ?page skips straight to the company page — the page itself is not going
+  // anywhere, this step just sits in front of it.
+  if (root.classList.contains('intake-first')) open(); else reveal();
+  document.getElementById('skip').addEventListener('click', close);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !intake.hidden) close(); });
+
+// ---- the cue down to the list -------------------------------------------
+  const cues = intake.querySelector('.cues');
+  const cueWrap = document.getElementById('faq-cue-wrap');
+  // It asks "do you know what I want?", so it retires the moment that question
+  // is answered — and it has no backdrop, so leaving it over a growing list of
+  // filenames would just be two things printed on top of each other.
+  let cueRetired = false;
+  const retireCue = () => { cueRetired = true; cueWrap.classList.remove('is-in'); };
+  if (cues && cueWrap) {
+    // After she has arrived and said her piece, not competing with her.
+    setTimeout(() => { if (!intake.hidden && !cueRetired) cueWrap.classList.add('is-in'); }, 1900);
+    document.getElementById('faq-cue').addEventListener('click', () => {
+      cues.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+    // Once the list is reached it has done its job.
+    new IntersectionObserver(
+      ([e]) => cueWrap.classList.toggle('is-in', !e.isIntersecting && !intake.hidden && !cueRetired),
+      { root: intake, threshold: 0.12 },
+    ).observe(cues);
+  }
+
+  // ---- taking the files ---------------------------------------------------
+  const received = [];
+  const received_names = new Set();
+
+  const show = () => {
+    const n = received.length;
+    hint.textContent = n ? `${n} file${n === 1 ? '' : 's'}` : 'Drop them on me';
+    const first = received.slice(0, 6);
+    const rest = n - first.length;
+    took.hidden = false;
+    took.innerHTML =
+      `<p class="lead" style="margin-top:0">Got ${n === 1 ? 'it' : 'them'}. ` +
+      `<b style="font-weight:600;color:var(--color-ink)">${n} file${n === 1 ? '' : 's'}</b>, and nothing for you to sort.</p>` +
+      `<ul>${first.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` +
+      (rest > 0 ? `<p class="more">and ${rest} more</p>` : '') +
+      `<p class="more" style="margin-top:.75rem">Prototype — the files stay on your machine. Nothing is uploaded, read or saved.</p>`;
+  };
+
+  const screen = intake.querySelector('.intake-screen');
+  const take = (list) => {
+    for (const f of list) {
+      if (received_names.has(f.name)) continue;
+      received_names.add(f.name);
+      received.push(f.name);
+    }
+    if (!received.length) return;
+    // Her pitch folds away, the buttons come up, and the way on appears.
+    screen.classList.add('has-files');
+    retireCue();
+    show();
+  };
+
+  document.getElementById('hand').addEventListener('click', () => {
+    // The step after this one is not built yet.
+  });
+
+  document.getElementById('pick').addEventListener('click', () => file.click());
+  file.addEventListener('change', () => { take(file.files); file.value = ''; });
+  drop.addEventListener('click', () => file.click());
+
+  // The whole overlay accepts the drop, so a near miss still lands; only ALMA
+  // lights up, because she is what you are aiming at.
+  let depth = 0;
+  const over = (on) => drop.classList.toggle('is-over', on);
+  intake.addEventListener('dragenter', (e) => { e.preventDefault(); depth++; over(true); });
+  intake.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+  intake.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; over(false); } });
+  intake.addEventListener('drop', (e) => {
+    e.preventDefault(); depth = 0; over(false);
+    take(e.dataTransfer.files);
+  });
+  // A file dropped anywhere else would navigate the browser away from the page.
+  addEventListener('dragover', (e) => e.preventDefault());
+  addEventListener('drop', (e) => e.preventDefault());
+})();
+</script>
+
+</body>
+</html>

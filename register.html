@@ -219,6 +219,13 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
 @keyframes arrive { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 /* going back runs the landing's move in reverse: this page drops away downwards */
 .leaving .reg { transform: translateY(100vh); transition: transform .7s cubic-bezier(0.7, 0, 0.2, 1); }
+/* Going on to the company: this screen does not slide away, it dissolves.
+   The veil settles on the same off-white the next page paints itself, so the
+   two pages meet on one colour and the navigation underneath is invisible. */
+.to-company { position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  background: var(--color-off-white); opacity: 0; transition: opacity .9s ease; }
+.to-company.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .to-company { transition: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -330,7 +337,7 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
         <p class="lead"><span id="done-co">Your company</span> is set up, and your profile already has what we found.</p>
         <ul class="ready" id="ready"></ul>
         <div class="actions" style="align-items:stretch">
-          <a class="btn btn-primary" href="#" onclick="return false">Go to my company</a>
+          <a class="btn btn-primary" href="my-company.html">Go to my company</a>
           <a class="link-btn" style="text-align:center" href="index.html" data-back>Back to the landing</a>
         </div>
       </section>
@@ -517,6 +524,21 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
     show('done');
   }
 
+  // ---- on to the company: dissolve to off-white, then go -------------------
+  // The next page paints off-white before anything of its own, so the join is
+  // one continuous colour rather than a flash of a page you were not meant to
+  // see yet.
+  const onward = document.querySelector('a[href="my-company.html"]');
+  if (onward) onward.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    const veil = document.createElement('div');
+    veil.className = 'to-company';
+    document.body.appendChild(veil);
+    requestAnimationFrame(() => veil.classList.add('on'));
+    setTimeout(() => { location.href = onward.getAttribute('href'); }, reduced ? 0 : 950);
+  });
+
   // ---- back to the landing: the arrival, reversed ---------------------------
   document.querySelectorAll('[data-back]').forEach((a) => a.addEventListener('click', (e) => {
     if (reduced || e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -524,7 +546,13 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
     document.documentElement.classList.add('leaving');
     setTimeout(() => { location.href = a.getAttribute('href'); }, 620);
   }));
-  addEventListener('pageshow', (e) => { if (e.persisted) document.documentElement.classList.remove('leaving'); });
+  addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+    document.documentElement.classList.remove('leaving');
+    // Restored from the back/forward cache the veil would still be sitting
+    // there at full opacity, and this page would be a blank off-white field.
+    document.querySelectorAll('.to-company').forEach((v) => v.remove());
+  });
 
   if (!qs.has('embed')) setTimeout(() => emailIn.focus({ preventScroll: true }), qs.has('from') ? 0 : 350);
 })();
