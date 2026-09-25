@@ -65,12 +65,15 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 
 /* ---- Page frame --------------------------------------------------------- */
 .reg { min-height: 100vh; display: flex; flex-direction: column; }
-.reg-top { height: 4.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding-inline: 1.25rem; border-bottom: 1px solid var(--color-line); }
-@media (min-width: 40rem) { .reg-top { padding-inline: 2rem; } }
-@media (min-width: 64rem) { .reg-top { padding-inline: 2.5rem; } }
-.brand { display: inline-flex; align-items: baseline; gap: 1px; font-weight: 600; letter-spacing: -0.02em; font-size: 1.25rem; text-decoration: none; color: inherit; }
-.brand i { font-style: normal; color: var(--color-activation); }
+.reg-top { height: 4.5rem; border-bottom: 1px solid var(--color-line); }
+/* the landing header's column: the site's 78rem measure, 2rem in on phones, 2.5rem from 64rem */
+.hdr-in { width: 100%; max-width: 78rem; margin-inline: auto; padding-inline: 2rem; height: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+@media (min-width: 64rem) { .hdr-in { padding-inline: 2.5rem; } }
+
+/* the logo file, at the landing header's size; the link carries the accessible name */
+.brand { display: block; flex: none; line-height: 0; text-decoration: none; }
+.brand img { display: block; width: 6.8rem; height: 1.25rem; }
 .top-link { font-size: 0.875rem; color: var(--color-ink-subtle); text-decoration: none; }
 .top-link:hover { color: var(--color-ink); }
 .top-link b { font-weight: 500; color: var(--color-ink); }
@@ -234,10 +237,10 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
 </head>
 <body>
 <div class="reg">
-  <header class="reg-top">
-    <a class="brand" href="index.html" data-back aria-label="C-MORE, back to the landing">C<i aria-hidden="true">&ndash;</i>MORE</a>
+  <header class="reg-top"><div class="hdr-in">
+    <a class="brand" href="index.html" data-back aria-label="C-MORE, back to the landing"><img src="images/cmore-logo.svg" alt="" width="109" height="20"></a>
     <a class="top-link" href="#" onclick="return false">Already have an account? <b>Log in</b></a>
-  </header>
+  </div></header>
 
   <nav class="home-cue" aria-label="Leave sign-up"><a href="index.html" data-back>Back to home</a></nav>
 
