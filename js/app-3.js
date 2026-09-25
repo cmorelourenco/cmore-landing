@@ -313,7 +313,9 @@ function mountSphere(canvas, opts = {}) {
           ctx.globalAlpha = (o.pointColor ? 1 : io) * 0.95 * (1 - t) ** 0.7; ctx.strokeStyle = col; ctx.lineWidth = 3;
           ctx.strokeRect(p.x - rs / 2, p.y - rs / 2, rs, rs);
         }
-        ctx.globalAlpha = o.pointColor ? 1 : io * (0.5 + 0.5 * p.d); ctx.fillStyle = col; // a coloured point keeps full strength even where the web is softened ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s); ctx.globalAlpha = io; return;
+        ctx.globalAlpha = o.pointColor ? 1 : io * (0.5 + 0.5 * p.d); ctx.fillStyle = col;
+        // a coloured point keeps full strength even where the web is softened
+        ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s); ctx.globalAlpha = io; return;
       }
       const s = (1.4 + 2.4 * p.d) * p.s;
       ctx.fillStyle = `rgba(${useInk},${Math.min(1, (0.14 + 0.86 * p.d) * o.dotAlpha * bst).toFixed(3)})`;
