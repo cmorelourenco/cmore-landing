@@ -120,7 +120,11 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 .stage { max-width: 78rem; }
 .intro { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 44rem; margin-inline: auto; }
 .intro .lead { max-width: 33rem; }
+/* one line wherever it fits */
+@media (min-width: 50rem) { .intro { max-width: none; } .intro .lead { max-width: none; white-space: nowrap; } }
 .w-mark { white-space: nowrap; }
+/* the company name never breaks at its hyphen */
+.nb { white-space: nowrap; }
 .w-mark { background-image: linear-gradient(var(--color-coral), var(--color-coral)); background-repeat: no-repeat;
   background-position: 0 88%; background-size: 0% 0.28em; padding-inline: 0.06em;
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
@@ -280,7 +284,7 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
         <div class="intro">
           <p class="eyebrow">Early access</p>
           <h1 class="title" id="t-perks">Be one of the first 2,500.<br><span class="soft">Become a <span class="w-mark">founding member</span>.</span></h1>
-          <p class="lead">Early access is limited to the first 2,500 companies. The ones who join now get more than a head start.</p>
+          <p class="lead">Early access is limited to the first 2,500 companies. Join now to get more than a head start.</p>
         </div>
 
         <div class="deck">
@@ -308,7 +312,7 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
             </span>
             <span class="open">
               <span class="copy">
-                <span><span class="head"><span class="sq"></span>PERK 02 / 04</span><h2>Always visible</h2><p>Your company stays visible to everyone in the C-MORE ecosystem, for good.</p></span>
+                <span><span class="head"><span class="sq"></span>PERK 02 / 04</span><h2>Always visible</h2><p>Your company stays visible to everyone in the <span class="nb">C-MORE</span> ecosystem, for good.</p></span>
                 <span class="chip">Permanent listing</span>
               </span>
               <span class="illo">
@@ -327,7 +331,7 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
             </span>
             <span class="open">
               <span class="copy">
-                <span><span class="head"><span class="sq"></span>PERK 03 / 04</span><h2>Highlighted in the marketplace</h2><p>One week every month, your company is featured in the C-MORE marketplace.</p></span>
+                <span><span class="head"><span class="sq"></span>PERK 03 / 04</span><h2>Highlighted in the marketplace</h2><p>One week every month, your company is featured in the <span class="nb">C-MORE</span> marketplace.</p></span>
                 <span class="chip">1 week every month</span>
               </span>
               <span class="illo">
