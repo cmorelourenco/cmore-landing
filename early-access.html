@@ -132,8 +132,8 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 @keyframes mark-in { to { background-size: 100% 0.28em; } }
 
 .deck { --tint: #f7b19f; margin-top: 1.75rem; display: flex; flex-direction: column; gap: 22px; }
-.deck .row { height: 480px; display: flex; gap: 12px; }
-.deck .panel { flex: 1 1 0; min-width: 0; height: 480px; padding: 0; border-radius: 18px; border: 1px solid var(--color-line); background: var(--color-surface);
+.deck .row { height: clamp(340px, 2vh, 800px); display: flex; gap: 12px; }
+.deck .panel { flex: 1 1 0; min-width: 0; height: clamp(340px, 2vh, 800px); padding: 0; border-radius: 18px; border: 1px solid var(--color-line); background: var(--color-surface);
   box-shadow: 0 1px 2px rgba(52,52,52,.04); text-align: left; font-family: inherit; color: var(--color-ink); overflow: hidden; position: relative; cursor: pointer;
   transition: flex-grow .6s cubic-bezier(.3,.8,.25,1), background-color .45s, border-color .45s, box-shadow .45s, transform .3s; }
 .deck .panel:hover { border-color: var(--color-sand-400); transform: translateY(-3px); }
@@ -228,7 +228,7 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 
 /* laptop (the 1024 artboard) */
 @media (max-width: 1200px) {
-  .deck .row, .deck .panel { height: 420px; } .deck .row { gap: 10px; } .deck .panel { border-radius: 16px; }
+  .deck .row, .deck .panel { height: clamp(340px, 2vh, 800px); } .deck .row { gap: 10px; } .deck .panel { border-radius: 16px; }
   .deck .closed { padding: 22px 20px; } .deck .closed .ptitle { font-size: 19px; }
   .deck .open { padding: 26px 28px; gap: 22px; } .deck .open .copy { flex-basis: 262px; }
   .deck .open h2 { font-size: 34px; } .deck .open p { font-size: 18px; } .deck .chip { font-size: 16.5px; }
