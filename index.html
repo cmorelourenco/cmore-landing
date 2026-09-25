@@ -1571,8 +1571,13 @@ class Component extends DCLogic {
         if (!track || !track.isConnected) { track = document.querySelector('.eco-track'); steps = track ? [...track.querySelectorAll('.eco-step')] : []; }
         if (!track) return;
         const vh = innerHeight, r = track.getBoundingClientRect();
-        // starts when the track's top reaches 90% of the viewport, complete at 45%
-        const p = reduced ? 1 : clamp((vh * 0.9 - r.top) / (vh * 0.45));
+        // starts when the track's top reaches 90% of the viewport and completes at 45%, or at the
+        // bottom of the page if that comes first: on a tall window the page ends before the track
+        // can climb to 45%, which left the last step unlit
+        const sc = window.__plx ? window.__plx.scroller() : document.scrollingElement;
+        const left = Math.max(0, sc.scrollHeight - innerHeight - (window.__plx ? window.__plx.scrollTop() : scrollY));
+        const endTop = Math.min(vh * 0.8, Math.max(vh * 0.45, r.top - left + 24));
+        const p = reduced ? 1 : clamp((vh * 0.9 - r.top) / Math.max(1, vh * 0.9 - endTop));
         const frame = track.parentElement;
         frame.style.setProperty('--eco', p.toFixed(4));
         const nodes = track.querySelectorAll('.eco-node');
