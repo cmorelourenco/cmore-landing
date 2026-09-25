@@ -1409,7 +1409,7 @@ a{color:var(--color-ink);text-decoration-color:var(--color-activation)}a:hover{c
 @property --fill{syntax:'<percentage>';inherits:false;initial-value:0%}
 @property --hdr{syntax:'<length>';inherits:true;initial-value:9rem}
 /* --bar is the early-access strip under the header; --hdr is everything pinned at the top */
-:root{--bar:4.5rem;--hdr:9rem;transition:--hdr .32s var(--ease-brand,ease)}:root.hdr-hidden{--hdr:0px}
+:root{--bar:clamp(3.25rem,9vh,4.5rem);--hdr:calc(4.5rem + var(--bar));transition:--hdr .32s var(--ease-brand,ease)}:root.hdr-hidden{--hdr:0px}
 header{transition:transform .32s var(--ease-brand,ease)}:root.hdr-hidden header{transform:translateY(-100%)}
 /* The early-access bar, docked under the header and travelling with it. */
 .ea-strip{position:sticky;top:4.5rem;z-index:49;height:var(--bar);background:var(--color-graphite);display:flex;justify-content:center;transition:transform .32s var(--ease-brand,ease)}
@@ -1424,7 +1424,7 @@ header{transition:transform .32s var(--ease-brand,ease)}:root.hdr-hidden header{
 .ea-block .ea-num{font-weight:700;font-size:1.5rem;letter-spacing:-0.02em}
 .ea-block a{flex:none;display:inline-flex;align-items:center;height:2.75rem;padding-inline:1.375rem;border-radius:9999px;background:var(--color-off-white);color:var(--color-graphite);font-size:1.0625rem;font-weight:500;text-decoration:none;transition:background-color .14s var(--ease-brand,ease),box-shadow .22s var(--ease-brand,ease)}
 .ea-block a:hover{background:var(--color-dark-beige);color:var(--color-graphite);box-shadow:none}
-@media (max-width:768px){:root{--bar:3.75rem;--hdr:8.25rem}.ea-block{gap:0.625rem;padding-inline:0.875rem}.ea-block p{font-size:1rem}.ea-block .ea-num{font-size:1.1875rem}.ea-block a{height:2.25rem;padding-inline:0.875rem;font-size:0.875rem}}
+/* on shorter laptops the bar and its contents follow the window height */@media (min-width:769px){.ea-block p{font-size:clamp(1.0625rem,2.6vh,1.3125rem)}.ea-block .ea-num{font-size:clamp(1.25rem,3.1vh,1.5rem)}.ea-block a{height:clamp(2.25rem,5.6vh,2.75rem);font-size:clamp(0.9375rem,2.1vh,1.0625rem)}}@media (max-width:768px){:root{--bar:3.75rem;--hdr:8.25rem}.ea-block{gap:0.625rem;padding-inline:0.875rem}.ea-block p{font-size:1rem}.ea-block .ea-num{font-size:1.1875rem}.ea-block a{height:2.25rem;padding-inline:0.875rem;font-size:0.875rem}}
 @media (prefers-reduced-motion:reduce){:root,header{transition:none}}
 .reg-sheet{position:fixed;inset:0;z-index:1000;border:0;width:100%;height:100%;background:var(--color-ground);transform:translateY(100%);box-shadow:0 -24px 60px -30px rgba(52,52,52,.35);transition:transform .8s cubic-bezier(0.7,0,0.2,1)}
 .reg-sheet.is-up{transform:translateY(0)}
