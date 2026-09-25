@@ -224,7 +224,9 @@ const { scrollTop, onScroll } = window.__plx;
 function mountSphere(canvas, opts = {}) {
   const o = Object.assign({ n: 420, k: 3, ink: '52,52,52', coral: '#f46d4f', coralPoint: true, scrollRot: 0.0022, drift: 0.00009,
     pointer: 0.5, tilt: 0.28, radius: 0.44, lineAlpha: 0.3, lineBase: 0.04, dotAlpha: 1, intensity: 1,
-    inkInvert: '250,250,250', band: '#343434', bandSelector: '', bandOnly: false, darkBoost: 3, anchor: null, plxY: 0, plxScale: 0, centerSel: '', centerZoom: 1, centerBias: 0, inkOpacity: 1, inkOpacityMobile: 0, radiusMobile: 0 }, opts);
+    inkInvert: '250,250,250', band: '#343434', bandSelector: '', bandOnly: false, darkBoost: 3, anchor: null, plxY: 0, plxScale: 0, centerSel: '', centerZoom: 1, centerBias: 0, inkOpacity: 1, inkOpacityMobile: 0, radiusMobile: 0,
+    // opt-in: colour the one distinct point, make it pulse, and start it at a set angle from facing you
+    pointColor: '', pulse: false, pointAngle: null, pointSize: 10 }, opts);
   const ctx = canvas.getContext('2d');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mqSmall = matchMedia('(max-width: 768px)');
@@ -241,6 +243,10 @@ function mountSphere(canvas, opts = {}) {
   const ci = Math.floor(o.n / 2);
   let phase = 0, zmin = 9;
   for (let a = 0; a < Math.PI * 2; a += Math.PI / 180) { const z = -pts[ci][0] * Math.sin(a) + pts[ci][2] * Math.cos(a); if (z < zmin) { zmin = z; phase = a; } }
+  // pointAngle: start from the turn that faces it towards you instead, offset by that many radians,
+  // and count the drift from now so where it starts does not depend on how long the page has been open
+  const fromMount = o.pointAngle != null, t0 = performance.now();
+  if (fromMount) phase += Math.PI + o.pointAngle;
 
   let W = 0, H = 0, dpr = 1, raf = 0, alive = true, mx = 0, my = 0, tx = 0, ty = 0;
   const size = () => { W = Math.max(1, canvas.clientWidth); H = Math.max(1, canvas.clientHeight); dpr = Math.min(2, devicePixelRatio || 1); canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); };
@@ -250,7 +256,7 @@ function mountSphere(canvas, opts = {}) {
     raf = 0; if (!alive) return;
     if (canvas.clientWidth !== W || canvas.clientHeight !== H) size();
     mx += (tx - mx) * 0.04; my += (ty - my) * 0.04;
-    const ay = phase + (reduced ? 0 : now * o.drift) + scrollTop() * o.scrollRot * o.intensity + mx * o.pointer;
+    const ay = phase + (reduced ? 0 : (fromMount ? now - t0 : now) * o.drift) + scrollTop() * o.scrollRot * o.intensity + mx * o.pointer;
     const ax = 0.3 + my * o.tilt;
     const cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sx = Math.sin(ax);
     let ox = W / 2, oy = H / 2, zoom = 1;
@@ -296,7 +302,19 @@ function mountSphere(canvas, opts = {}) {
     });
     pr.map((p, i) => i).sort((a, b) => pr[a].d - pr[b].d).forEach((i) => {
       const p = pr[i];
-      if (o.coralPoint && i === ci) { const s = 10 * p.s; ctx.globalAlpha = io * (0.5 + 0.5 * p.d); ctx.fillStyle = `rgb(${useInk})`; ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s); ctx.globalAlpha = io; return; }
+      if (o.coralPoint && i === ci) {
+        let s = o.pointSize * p.s;
+        const col = o.pointColor || `rgb(${useInk})`;
+        if (o.pulse && !reduced) {
+          // a heartbeat: the square swells a little, and a ring opens out of it and fades
+          const t = ((now - t0) % 2400) / 2400;
+          s *= 1 + 0.2 * Math.sin(t * Math.PI * 2);
+          const rs = s * (1.3 + t * 3.8);
+          ctx.globalAlpha = (o.pointColor ? 1 : io) * 0.95 * (1 - t) ** 0.7; ctx.strokeStyle = col; ctx.lineWidth = 3;
+          ctx.strokeRect(p.x - rs / 2, p.y - rs / 2, rs, rs);
+        }
+        ctx.globalAlpha = o.pointColor ? 1 : io * (0.5 + 0.5 * p.d); ctx.fillStyle = col; // a coloured point keeps full strength even where the web is softened ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s); ctx.globalAlpha = io; return;
+      }
       const s = (1.4 + 2.4 * p.d) * p.s;
       ctx.fillStyle = `rgba(${useInk},${Math.min(1, (0.14 + 0.86 * p.d) * o.dotAlpha * bst).toFixed(3)})`;
       ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
