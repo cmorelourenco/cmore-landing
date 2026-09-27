@@ -340,7 +340,7 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
         <p class="lead"><span id="done-co">Your company</span> is set up, and your profile already has what we found.</p>
         <ul class="ready" id="ready"></ul>
         <div class="actions" style="align-items:stretch">
-          <a class="btn btn-primary" href="my-company.html">Go to my company</a>
+          <a class="btn btn-primary" href="payment.html">Continue</a>
           <a class="link-btn" style="text-align:center" href="index.html" data-back>Back to the landing</a>
         </div>
       </section>
@@ -524,14 +524,29 @@ select.input { appearance: none; padding-right: 2.5rem; cursor: pointer;
     const rows = [['Company', co], ['Sector', $('#c-sector').value], ['Country', $('#c-country').value],
       ['Size', $('#c-size').value + ' people'], ['Joining as', joiningAs], ['You', name + (($('#c-role').value || '').trim() ? ', ' + $('#c-role').value.trim() : '')]];
     $('#ready').innerHTML = rows.map(([k, v]) => `<li><span>${esc(k)}</span><span>${esc(v)}</span></li>`).join('');
+    // remembered for this tab, so Back from the plan page lands here again
+    try { sessionStorage.setItem('cm-done', JSON.stringify({ first, co, pic: $('#d-pic').innerHTML, mono: $('#d-mono').textContent, ready: $('#ready').innerHTML })); } catch (e) {}
     show('done');
+  }
+  // coming back from the plan page (register.html#done): the welcome screen again, as it was
+  if (location.hash === '#done') {
+    try {
+      const d = JSON.parse(sessionStorage.getItem('cm-done') || 'null');
+      if (d) {
+        $('#done-name').textContent = d.first; $('#done-name-wrap').hidden = !d.first;
+        $('#done-co').textContent = d.co || 'Your company';
+        $('#d-pic').innerHTML = d.pic; $('#d-mono').textContent = d.mono; $('#ready').innerHTML = d.ready;
+        document.querySelector('[data-step="done"] .done-mark').hidden = true;
+        show('done');
+      }
+    } catch (e) {}
   }
 
   // ---- on to the company: dissolve to off-white, then go -------------------
   // The next page paints off-white before anything of its own, so the join is
   // one continuous colour rather than a flash of a page you were not meant to
   // see yet.
-  const onward = document.querySelector('a[href="my-company.html"]');
+  const onward = document.querySelector('a[href="my-company.html"]'); // no longer on this page: the plan picker comes first
   if (onward) onward.addEventListener('click', (e) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();
