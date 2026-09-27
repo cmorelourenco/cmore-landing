@@ -117,7 +117,8 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 
 
 /* ---- Plan picker: the payment export, on the site's own tokens ---------- */
-.pay-page .reg-main { padding-top: 3.5rem; }
+/* anchored from the top, same as checkout, so the headline stays put between the two steps */
+.pay-page .reg-main { place-items: start center; padding-top: clamp(2rem, 10vh, 5.5rem); }
 .stage { max-width: 57.5rem; display: flex; flex-direction: column; gap: 2.25rem; }
 .intro { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
 .intro .title { margin-top: 0; }
@@ -214,7 +215,7 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
         <p class="lede">Same founding-member access either way. Pick the billing that suits your company and continue to checkout.</p>
       </div>
 
-      <form id="plan-form" action="my-company.html" method="get" novalidate>
+      <form id="plan-form" action="checkout.html" method="get" novalidate>
         <div class="plans" role="radiogroup" aria-label="Billing plan" id="plans">
 
           <button type="button" class="plan" role="radio" aria-checked="false" data-plan="monthly" tabindex="-1">
@@ -289,19 +290,10 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
   const q = qs.get('plan');
   if (q === 'monthly' || q === 'annual') select(q);
 
-  // ---- on to ALMA ----------------------------------------------------------------
-  // Prototype: there is no checkout yet, so continuing goes straight on to the
-  // company page, where ALMA asks for the documents. It dissolves to off-white
-  // exactly as the sign-up did, because that page paints off-white first.
+  // ---- on to checkout, with the chosen plan -----------------------------------
   document.getElementById('plan-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const go = () => { location.href = 'my-company.html'; };
-    if (reduced) return go();
-    const veil = document.createElement('div');
-    veil.className = 'to-company';
-    document.body.appendChild(veil);
-    requestAnimationFrame(() => veil.classList.add('on'));
-    setTimeout(go, 950);
+    location.href = 'checkout.html?plan=' + chosen;
   });
 
   // Back goes to the sign-up's welcome screen (register.html#done), which that page remembers for this tab.
