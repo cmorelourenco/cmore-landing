@@ -117,6 +117,13 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 
 
 /* ---- Plan picker: the payment export, on the site's own tokens ---------- */
+/* currency: one switch, shared by the plan picker and checkout */
+.cur { display: inline-flex; padding: .1875rem; gap: .1875rem; background: var(--color-surface-sunken); border-radius: var(--radius-pill); }
+.cur button { border: 0; background: transparent; cursor: pointer; font: inherit; font-size: .8125rem; font-weight: 600; letter-spacing: .02em; color: var(--color-ink-muted);
+  padding: .375rem .875rem; border-radius: var(--radius-pill); transition: background-color .14s var(--ease-brand), color .14s var(--ease-brand), box-shadow .14s; }
+.cur button:hover { color: var(--color-ink); }
+.cur button[aria-checked="true"] { background: var(--color-surface); color: var(--color-ink); box-shadow: var(--shadow-raised); }
+.cur button:focus-visible { outline: 2px solid var(--color-graphite); outline-offset: 2px; }
 /* anchored from the top, same as checkout, so the headline stays put between the two steps */
 .pay-page .reg-main { place-items: start center; padding-top: clamp(2rem, 10vh, 5.5rem); }
 .stage { max-width: 57.5rem; display: flex; flex-direction: column; gap: 2.25rem; }
@@ -213,6 +220,11 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
         <span class="eyebrow">Founding member · Step 2 of 3</span>
         <h1 class="title">Choose how you want <span class="w-mark">to pay</span>.</h1>
         <p class="lede">Same founding-member access either way. Pick the billing that suits your company and continue to checkout.</p>
+        <div class="cur" role="radiogroup" aria-label="Currency" id="cur">
+          <button type="button" role="radio" aria-checked="true" data-cur="usd">USD $</button>
+          <button type="button" role="radio" aria-checked="false" data-cur="eur">EUR €</button>
+          <button type="button" role="radio" aria-checked="false" data-cur="cny">CNY ¥</button>
+        </div>
       </div>
 
       <form id="plan-form" action="checkout.html" method="get" novalidate>
@@ -224,24 +236,23 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
               <span class="radio" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#343434" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
             </span>
             <span class="price">
-              <span class="amt"><strong>$50</strong><span class="per muted">/ month</span></span>
-              <span class="note muted">$600 over a year</span>
+              <span class="amt"><strong id="m-amt">$50</strong><span class="per muted">/ month</span></span>
+              <span class="note muted" id="m-note">$600 over a year</span>
             </span>
             <span class="feats">
               <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f46d4f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Billed monthly</span>
-              <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f46d4f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Full founding-member perks</span>
             </span>
           </button>
 
           <button type="button" class="plan" role="radio" aria-checked="true" data-plan="annual" tabindex="0">
-            <span class="tag">2 months free</span>
+            <span class="tag">Founders’ early access</span>
             <span class="head">
               <span class="kind"><small class="muted">Annual</small><span>Commit for the year</span></span>
               <span class="radio" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#343434" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
             </span>
             <span class="price">
-              <span class="amt"><strong>$500</strong><span class="per muted">/ year</span></span>
-              <span class="note muted">Works out at $41.67 / month · save $100</span>
+              <span class="amt"><strong id="y-amt">$400</strong><span class="per muted">/ year</span></span>
+              <span class="note muted" id="y-note">Works out at $33.33 / month · save $200</span>
             </span>
             <span class="feats">
               <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f46d4f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Billed once a year</span>
@@ -273,6 +284,37 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
 
   // ---- the plans: a radio group, annual preselected ---------------------------
   const plans = [...document.querySelectorAll('.plan')];
+  // ---- currency: USD, EUR or CNY, carried between the plan picker and checkout ----
+  // Prices per currency. EUR and CNY are placeholders until the real ones are set.
+  const CUR = { usd: { sym: '$', m: 50, y: 400 }, eur: { sym: '€', m: 50, y: 400 }, cny: { sym: '¥', m: 360, y: 2880 } };
+  const money = (c, n) => CUR[c].sym + n.toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+  let cur = (() => { const v = qs.get('cur'); if (CUR[v]) return v; try { const s = sessionStorage.getItem('cm-cur'); if (CUR[s]) return s; } catch (e) {} return 'usd'; })();
+  const curBtns = [...document.querySelectorAll('#cur [role="radio"]')];
+  const onCur = [];
+  const setCur = (c) => {
+    cur = c;
+    try { sessionStorage.setItem('cm-cur', c); } catch (e) {}
+    curBtns.forEach((b) => { const on = b.dataset.cur === c; b.setAttribute('aria-checked', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
+    onCur.forEach((f) => f());
+  };
+  curBtns.forEach((b) => {
+    b.addEventListener('click', () => setCur(b.dataset.cur));
+    b.addEventListener('keydown', (e) => {
+      if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(e.key)) return;
+      e.preventDefault();
+      const i = curBtns.indexOf(b), n = curBtns[(i + (e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 1) + curBtns.length) % curBtns.length];
+      setCur(n.dataset.cur); n.focus();
+    });
+  });
+  onCur.push(() => {
+    const c = CUR[cur];
+    document.getElementById('m-amt').textContent = money(cur, c.m);
+    document.getElementById('m-note').textContent = money(cur, c.m * 12) + ' over a year';
+    document.getElementById('y-amt').textContent = money(cur, c.y);
+    document.getElementById('y-note').textContent = 'Works out at ' + money(cur, Math.round(c.y / 12 * 100) / 100) + ' / month · save ' + money(cur, c.m * 12 - c.y);
+  });
+  setCur(cur);
+
   let chosen = 'annual';
   const select = (plan) => {
     chosen = plan;
@@ -293,7 +335,7 @@ a { color: var(--color-ink); text-decoration-color: var(--color-activation); tex
   // ---- on to checkout, with the chosen plan -----------------------------------
   document.getElementById('plan-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    location.href = 'checkout.html?plan=' + chosen;
+    location.href = 'checkout.html?plan=' + chosen + '&cur=' + cur;
   });
 
   // Back goes to the sign-up's welcome screen (register.html#done), which that page remembers for this tab.
